@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/project_java_web?createDatabaseIfNotExist=true</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">13012005</property>
+<!--        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property> 'ko nên dùng vì ko tạo khóa ngoại'-->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property> <!-- dùng MySQL8Dialect để tạo khóa ngoại -->
+        <property name="show_sql">true</property>
+        <!-- update: tự gen ra bảng theo entity, cột trong db nêếu chưa có -->
+        <!-- update: nêếu có rồi bỏ qua -->
+        <property name="hbm2ddl.auto">update</property>
+
+        <!-- declare entity -->
+        <mapping class="ra.edu.entity.Admin" />
+        <mapping class="ra.edu.entity.Customer" />
+        <mapping class="ra.edu.entity.Invoice" />
+        <mapping class="ra.edu.entity.InvoiceDetail" />
+        <mapping class="ra.edu.entity.Product" />
+    </session-factory>
+</hibernate-configuration>

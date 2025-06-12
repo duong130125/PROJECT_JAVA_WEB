@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .dashboard-card {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+    .card-number {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 0;
+    }
+    .card-title {
+      font-size: 0.9rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card-subtitle {
+      font-size: 0.8rem;
+      margin-top: 10px;
+    }
+    .blue-border { border-left: 4px solid #007bff; }
+    .green-border { border-left: 4px solid #28a745; }
+    .yellow-border { border-left: 4px solid #ffc107; }
+    .red-border { border-left: 4px solid #dc3545; }
+
+    .revenue-card {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .revenue-amount {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #28a745;
+    }
+    .quick-actions {
+      margin-top: 2rem;
+    }
+    .action-btn {
+      border-radius: 10px;
+      padding: 15px 25px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin: 5px;
+    }
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .btn-add-user { background-color: #007bff; color: white; }
+    .btn-add-product { background-color: #28a745; color: white; }
+    .btn-view-orders { background-color: #ffc107; color: #212529; }
+    .btn-refresh { background-color: #17a2b8; color: white; }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-large {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container-fluid p-4">
+
+  <!-- Statistics Cards Row -->
+  <div class="row g-4 mb-4">
+    <!-- Users Card -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card dashboard-card blue-border h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-users icon-large" style="color: #007bff;"></i>
+          <h2 class="card-number" style="color: #007bff;" th:text="${totalUsers ?: 0}">0</h2>
+          <p class="card-title">TỔNG USERS</p>
+          <p class="card-subtitle" style="color: #28a745;">
+            <i class="fas fa-user-check"></i>
+            <span th:text="${activeUsers ?: 0}">0</span> đang hoạt động
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Card -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card dashboard-card green-border h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-box icon-large" style="color: #28a745;"></i>
+          <h2 class="card-number" style="color: #28a745;" th:text="${totalProducts ?: 0}">0</h2>
+          <p class="card-title">TỔNG PRODUCTS</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Card -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card dashboard-card yellow-border h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-shopping-cart icon-large" style="color: #ffc107;"></i>
+          <h2 class="card-number" style="color: #ffc107;" th:text="${totalOrders ?: 0}">0</h2>
+          <p class="card-title">TỔNG ORDERS</p>
+          <p class="card-subtitle" style="color: #ffc107;">
+            <i class="fas fa-clock"></i>
+            <span th:text="${pendingOrders ?: 0}">0</span> đang chờ
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Revenue Card -->
+    <div class="col-xl-3 col-md-6">
+      <div class="card dashboard-card red-border h-100">
+        <div class="card-body text-center">
+          <i class="fas fa-dollar-sign icon-large" style="color: #dc3545;"></i>
+          <h2 class="card-number" style="color: #dc3545;" th:text="${totalRevenue ?: '$0.00'}">$0.00</h2>
+          <p class="card-title">TỔNG DOANH THU</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Statistics Row -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6">
+      <div class="card revenue-card h-100">
+        <div class="card-body text-center">
+          <h3 class="section-title text-white">
+            <i class="fas fa-chart-line"></i>
+            Doanh Thu Tháng Này
+          </h3>
+          <h2 class="revenue-amount" th:text="${monthlyRevenue ?: '$0.00'}">$0.00</h2>
+          <p class="mb-0">Tháng hiện tại</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card revenue-card h-100">
+        <div class="card-body text-center">
+          <h3 class="section-title text-white">
+            <i class="fas fa-chart-area"></i>
+            Doanh Thu Năm Này
+          </h3>
+          <h2 class="revenue-amount" th:text="${yearlyRevenue ?: '$0.00'}">$0.00</h2>
+          <p class="mb-0">Năm hiện tại</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Section -->
+  <div class="quick-actions">
+    <h3 class="section-title">
+      <i class="fas fa-bolt"></i>
+      Thao Tác Nhanh
+    </h3>
+    <div class="row">
+      <div class="col-12 text-center">
+        <a href="#" th:href="@{/users/add}" class="action-btn btn-add-user">
+          <i class="fas fa-user-plus"></i> Thêm User
+        </a>
+        <a href="#" th:href="@{/products/add}" class="action-btn btn-add-product">
+          <i class="fas fa-plus"></i> Thêm Product
+        </a>
+        <a href="#" th:href="@{/orders}" class="action-btn btn-view-orders">
+          <i class="fas fa-eye"></i> Xem Orders
+        </a>
+        <a href="#" th:href="@{/dashboard/refresh}" class="action-btn btn-refresh">
+          <i class="fas fa-sync-alt"></i> Refresh Stats
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!--<script>-->
+<!--  // Add some interactivity-->
+<!--  document.addEventListener('DOMContentLoaded', function() {-->
+<!--    // Add hover effects to cards-->
+<!--    const cards = document.querySelectorAll('.dashboard-card');-->
+<!--    cards.forEach(card => {-->
+<!--      card.addEventListener('mouseenter', function() {-->
+<!--        this.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15)';-->
+<!--      });-->
+<!--      card.addEventListener('mouseleave', function() {-->
+<!--        this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';-->
+<!--      });-->
+<!--    });-->
+
+<!--    // Add click animation to action buttons-->
+<!--    const actionBtns = document.querySelectorAll('.action-btn');-->
+<!--    actionBtns.forEach(btn => {-->
+<!--      btn.addEventListener('click', function(e) {-->
+<!--        e.preventDefault();-->
+<!--        this.style.transform = 'scale(0.95)';-->
+<!--        setTimeout(() => {-->
+<!--          this.style.transform = 'translateY(-2px)';-->
+<!--          // Simulate navigation - replace with actual navigation-->
+<!--          console.log('Navigating to:', this.getAttribute('href'));-->
+<!--        }, 100);-->
+<!--      });-->
+<!--    });-->
+<!--  });-->
+<!--</script>-->
+</body>
+</html>
