@@ -2,9 +2,310 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices Main Content</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .btn-orange {
+            background-color: #ff6b35;
+            border-color: #ff6b35;
+            color: white;
+        }
+        .btn-orange:hover {
+            background-color: #e55a2b;
+            border-color: #e55a2b;
+            color: white;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-overdue {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-draft {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        .status-cancelled {
+            background-color: #f5c6cb;
+            color: #721c24;
+        }
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: none;
+            margin: 0 2px;
+        }
+        .btn-view {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-edit {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light">
+<div class="container-fluid p-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-file-invoice me-2"></i>Invoices
+        </h2>
+        <div>
+            <button class="btn btn-orange">
+                <i class="fas fa-plus me-2"></i>Add Invoice
+            </button>
+            <div class="input-group d-inline-flex ms-3" style="width: 250px;">
+                <input type="text" class="form-control" placeholder="Search invoice...">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Invoices Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Customer Name</th>
+                        <th>Created At</th>
+                        <th>Status</th>
+                        <th>Total Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Nguyen Van A</td>
+                        <td>20/11/2023</td>
+                        <td>
+                            <span class="status-badge status-pending">PENDING</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Nguyen Van B</td>
+                        <td>02/11/2023</td>
+                        <td>
+                            <span class="status-badge status-pending">PENDING</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Online PolyTech</td>
+                        <td>23/11/2023</td>
+                        <td>
+                            <span class="status-badge status-overdue">OVERDUE</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Famous Dalisa</td>
+                        <td>07/11/2023</td>
+                        <td>
+                            <span class="status-badge status-draft">DRAFT</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Nguyen Van B</td>
+                        <td>05/11/2023</td>
+                        <td>
+                            <span class="status-badge status-paid">PAID</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Online PolyTech</td>
+                        <td>18/11/2023</td>
+                        <td>
+                            <span class="status-badge status-cancelled">CANCELLED</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Famous Dalisa</td>
+                        <td>25/11/2023</td>
+                        <td>
+                            <span class="status-badge status-paid">PAID</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Nguyen Van B</td>
+                        <td>10/11/2023</td>
+                        <td>
+                            <span class="status-badge status-paid">PAID</span>
+                        </td>
+                        <td>1,299 $</td>
+                        <td>
+                            <button class="action-btn btn-view" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn btn-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Invoices pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" href="#">&laquo;</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item active">
+                <a class="page-link btn-orange" href="#" style="background-color: #ff6b35; border-color: #ff6b35;">2</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">4</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">5</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">6</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">7</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

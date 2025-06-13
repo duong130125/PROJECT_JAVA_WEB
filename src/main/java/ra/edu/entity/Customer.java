@@ -24,11 +24,13 @@ public class Customer {
     @Column(nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, unique = true, length = 20)
     private String phone;
 
     @Column(nullable = false)
     private String address;
+
+    private boolean status;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Invoice> invoices;

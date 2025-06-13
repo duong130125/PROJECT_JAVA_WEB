@@ -34,6 +34,9 @@ public class Product {
     @Column(name = "product_image", nullable = false)
     private String image;
 
+    @Column(name = "product_status", nullable = false)
+    private boolean status = true;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceDetail> invoiceDetails = new ArrayList<>();
 }

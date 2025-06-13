@@ -2,9 +2,269 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .main-content {
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 2px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box .form-control {
+            padding-right: 40px;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+    </style>
 </head>
 <body>
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-users me-3 fs-2"></i>
+            <h1 class="mb-0">Customer Management</h1>
+        </div>
+    </div>
 
+    <!-- Customer Table -->
+    <div class="table-container">
+        <!-- Table Header -->
+        <div class="card-header bg-white p-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-bold">Customer Directory</h5>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex gap-3 justify-content-md-end">
+                        <div class="search-box">
+                            <input type="text" class="form-control" placeholder="Search customers...">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add Customer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Customer Name</th>
+                    <th>Email Address</th>
+                    <th>Phone Number</th>
+                    <th>Location</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><span class="badge bg-secondary">001</span></td>
+                    <td>Leanne Graham</td>
+                    <td>sincere@gmail.com</td>
+                    <td>+1 (555) 123-4567</td>
+                    <td>Alabama, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">002</span></td>
+                    <td>Ervin Howell</td>
+                    <td>shanna@gmail.com</td>
+                    <td>+1 (555) 234-5678</td>
+                    <td>Alaska, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">003</span></td>
+                    <td>Clementine Bauch</td>
+                    <td>nathan@gmail.com</td>
+                    <td>+1 (555) 345-6789</td>
+                    <td>Arizona, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">004</span></td>
+                    <td>Patricia Lebsack</td>
+                    <td>lucio@gmail.com</td>
+                    <td>+1 (555) 456-7890</td>
+                    <td>Arkansas, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">005</span></td>
+                    <td>Kurtis Weissnat</td>
+                    <td>telly.hoeger@gmail.com</td>
+                    <td>+1 (555) 567-8901</td>
+                    <td>California, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">006</span></td>
+                    <td>Michael Baulck</td>
+                    <td>baulck1976@gmail.com</td>
+                    <td>+1 (555) 678-9012</td>
+                    <td>Hawaii, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">007</span></td>
+                    <td>Patrick Vlatra</td>
+                    <td>vlatra976@gmail.com</td>
+                    <td>+1 (555) 789-0123</td>
+                    <td>Idaho, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="badge bg-secondary">008</span></td>
+                    <td>Doctor Gregra</td>
+                    <td>gregra1978@gmail.com</td>
+                    <td>+1 (555) 890-1234</td>
+                    <td>Kansas, USA</td>
+                    <td class="text-center">
+                        <button class="btn btn-warning btn-action" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-action" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="card-footer bg-white">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">4</a></li>
+                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                    <li class="page-item"><a class="page-link" href="#">6</a></li>
+                    <li class="page-item"><a class="page-link" href="#">7</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
