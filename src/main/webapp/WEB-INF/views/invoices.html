@@ -1,311 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoices Main Content</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Invoices</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-left i {
+            font-size: 24px;
+            color: #333;
+        }
+        .header-left h4 {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+            font-size: 24px;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
         .btn-orange {
+            background-color: #ff6b35;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .btn-orange:hover {
+            background-color: #e55c2b;
+            color: white;
+        }
+        .search-box {
+            width: 280px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+        }
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            font-size: 16px;
+        }
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table {
+            margin-bottom: 0;
+        }
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            font-size: 14px;
+            color: #495057;
+            padding: 15px 12px;
+        }
+        .table tbody td {
+            padding: 15px 12px;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            min-width: 90px;
+            text-align: center;
+        }
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .confirming {
+            background: #e7d4ff;
+            color: #6f42c1;
+            border: 1px solid #d1a7ff;
+        }
+        .shipping {
+            background: #cff4fc;
+            color: #0c5460;
+            border: 1px solid #9eeaf9;
+        }
+        .completed {
+            background: #d1f2d9;
+            color: #0a3622;
+            border: 1px solid #a6e9a6;
+        }
+        .cancelled {
+            background: #f8d7da;
+            color: #842029;
+            border: 1px solid #f1aeb5;
+        }
+        .action-icons {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        .action-icons i {
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .action-icons i:hover {
+            background-color: #f8f9fa;
+        }
+        .action-icons .delete { color: #dc3545; }
+        .action-icons .edit { color: #ffc107; }
+        .action-icons .view { color: #6f42c1; }
+        .pagination-container {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+        }
+        .pagination {
+            margin: 0;
+        }
+        .pagination .page-item {
+            margin: 0 2px;
+        }
+        .pagination .page-link {
+            border: 1px solid #dee2e6;
+            color: #6c757d;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .pagination .page-item.active .page-link {
             background-color: #ff6b35;
             border-color: #ff6b35;
             color: white;
         }
-        .btn-orange:hover {
-            background-color: #e55a2b;
-            border-color: #e55a2b;
-            color: white;
-        }
-        .table th {
+        .pagination .page-link:hover {
             background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #495057;
+        }
+        .pagination .page-item.active .page-link:hover {
+            background-color: #e55c2b;
+            border-color: #e55c2b;
+        }
+        .text-amount {
             font-weight: 600;
-            color: #555;
-            border-bottom: 2px solid #dee2e6;
-        }
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-        .status-paid {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .status-overdue {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .status-draft {
-            background-color: #e2e3e5;
-            color: #383d41;
-        }
-        .status-cancelled {
-            background-color: #f5c6cb;
-            color: #721c24;
-        }
-        .action-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
-            border: none;
-            margin: 0 2px;
-        }
-        .btn-view {
-            background-color: #007bff;
-            color: white;
-        }
-        .btn-edit {
-            background-color: #28a745;
-            color: white;
-        }
-        .btn-delete {
-            background-color: #dc3545;
-            color: white;
+            color: #333;
         }
     </style>
 </head>
-<body class="bg-light">
-<div class="container-fluid p-4">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">
-            <i class="fas fa-file-invoice me-2"></i>Invoices
-        </h2>
-        <div>
-            <button class="btn btn-orange">
-                <i class="fas fa-plus me-2"></i>Add Invoice
-            </button>
-            <div class="input-group d-inline-flex ms-3" style="width: 250px;">
-                <input type="text" class="form-control" placeholder="Search invoice...">
-                <button class="btn btn-outline-secondary" type="button">
-                    <i class="fas fa-search"></i>
-                </button>
+<body>
+<div class="container-fluid">
+    <div class="header-section">
+        <div class="header-left">
+            <i class="bi bi-receipt"></i>
+            <h4>Invoices</h4>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-orange">Add Invoice</button>
+            <div class="search-box">
+                <input type="text" class="form-control" placeholder="Search here...">
+                <i class="fas fa-search"></i>
             </div>
         </div>
     </div>
 
-    <!-- Invoices Table -->
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Customer Name</th>
-                        <th>Created At</th>
-                        <th>Status</th>
-                        <th>Total Amount</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Nguyen Van A</td>
-                        <td>20/11/2023</td>
-                        <td>
-                            <span class="status-badge status-pending">PENDING</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Nguyen Van B</td>
-                        <td>02/11/2023</td>
-                        <td>
-                            <span class="status-badge status-pending">PENDING</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Online PolyTech</td>
-                        <td>23/11/2023</td>
-                        <td>
-                            <span class="status-badge status-overdue">OVERDUE</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Famous Dalisa</td>
-                        <td>07/11/2023</td>
-                        <td>
-                            <span class="status-badge status-draft">DRAFT</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Nguyen Van B</td>
-                        <td>05/11/2023</td>
-                        <td>
-                            <span class="status-badge status-paid">PAID</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>Online PolyTech</td>
-                        <td>18/11/2023</td>
-                        <td>
-                            <span class="status-badge status-cancelled">CANCELLED</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>Famous Dalisa</td>
-                        <td>25/11/2023</td>
-                        <td>
-                            <span class="status-badge status-paid">PAID</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td>Nguyen Van B</td>
-                        <td>10/11/2023</td>
-                        <td>
-                            <span class="status-badge status-paid">PAID</span>
-                        </td>
-                        <td>1,299 $</td>
-                        <td>
-                            <button class="action-btn btn-view" title="View">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="action-btn btn-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="action-btn btn-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="table-container">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th style="width: 60px;">STT</th>
+                <th style="width: 200px;">Customer Name</th>
+                <th style="width: 150px;">Created At</th>
+                <th style="width: 150px; text-align: center;">Status</th>
+                <th style="width: 150px; text-align: right;">Total Amount</th>
+                <th style="width: 120px; text-align: center;">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>Michael Ballack</td>
+                <td>20/10/2022</td>
+                <td style="text-align: center;"><span class="status-badge pending">PENDING</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Michael Ballack</td>
+                <td>10/10/2022</td>
+                <td style="text-align: center;"><span class="status-badge pending">PENDING</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Didier Drogba</td>
+                <td>22/10/2023</td>
+                <td style="text-align: center;"><span class="status-badge confirming">CONFIRMING</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Patrick Vieira</td>
+                <td>01/10/2019</td>
+                <td style="text-align: center;"><span class="status-badge shipping">SHIPPING</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Michael Ballack</td>
+                <td>19/09/2020</td>
+                <td style="text-align: center;"><span class="status-badge completed">COMPLETED</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Didier Drogba</td>
+                <td>10/01/2011</td>
+                <td style="text-align: center;"><span class="status-badge cancelled">CANCELLED</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Patrick Vieira</td>
+                <td>09/10/2020</td>
+                <td style="text-align: center;"><span class="status-badge completed">COMPLETED</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>Michael Ballack</td>
+                <td>09/09/2020</td>
+                <td style="text-align: center;"><span class="status-badge completed">COMPLETED</span></td>
+                <td class="text-end text-amount">1,200 $</td>
+                <td>
+                    <div class="action-icons">
+                        <i class="bi bi-trash delete"></i>
+                        <i class="bi bi-pencil-square edit"></i>
+                        <i class="bi bi-eye view"></i>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <!-- Pagination -->
-    <nav aria-label="Invoices pagination" class="mt-4">
-        <ul class="pagination justify-content-center">
-            <li class="page-item">
-                <a class="page-link" href="#">&laquo;</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item active">
-                <a class="page-link btn-orange" href="#" style="background-color: #ff6b35; border-color: #ff6b35;">2</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">4</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">5</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">6</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">7</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">&raquo;</a>
-            </li>
-        </ul>
-    </nav>
+    <div class="pagination-container">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        ←
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item active"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">4</a></li>
+                <li class="page-item"><a class="page-link" href="#">5</a></li>
+                <li class="page-item"><a class="page-link" href="#">6</a></li>
+                <li class="page-item"><a class="page-link" href="#">7</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        →
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

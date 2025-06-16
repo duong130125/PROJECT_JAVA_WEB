@@ -104,6 +104,24 @@ public class ProductRepoImpl implements ProductRepo {
     }
 
     @Override
+    public Product findProductByName(String name) {
+        Session session = sessionFactory.openSession();
+        try {
+            String hql = "FROM Product p WHERE lower(p.name) = :name";
+            Query<Product> query = session.createQuery(hql, Product.class);
+            query.setParameter("name", name.toLowerCase());
+
+            List<Product> result = query.getResultList();
+            return result.isEmpty() ? null : result.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
     public List<Product> searchProductsByBrand(String keyword) {
         Session session = sessionFactory.openSession();
         try {

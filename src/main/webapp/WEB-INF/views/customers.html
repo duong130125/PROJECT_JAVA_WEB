@@ -1,269 +1,184 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Management</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Customer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f9f9f9;
+            padding: 30px;
         }
 
-        .main-content {
-            margin: 20px auto;
-            max-width: 1200px;
-        }
-
-        .page-header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .table-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .btn-action {
-            width: 35px;
-            height: 35px;
-            padding: 0;
-            border-radius: 50%;
-            display: inline-flex;
+        .header {
+            display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 2px;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .header i {
+            margin-right: 10px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .btn-add {
+            background-color: #ff6a00;
+            color: white;
+            font-weight: 500;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
         }
 
         .search-box {
             position: relative;
+            width: 250px;
         }
 
-        .search-box .form-control {
-            padding-right: 40px;
+        .search-box input {
+            padding-right: 30px;
+            border-radius: 8px;
         }
 
-        .search-box .search-icon {
+        .search-box .fa-search {
             position: absolute;
-            right: 15px;
             top: 50%;
+            right: 10px;
             transform: translateY(-50%);
-            color: #6c757d;
+            color: #aaa;
+        }
+
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .status-active {
+            background-color: #dcfce7;
+            color: #16a34a;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-deactivate {
+            background-color: #fee2e2;
+            color: #dc2626;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-action {
+            background: none;
+            border: none;
+            margin: 0 5px;
+            font-size: 16px;
+        }
+
+        .btn-lock i.text-success {
+            color: #16a34a;
+        }
+
+        .btn-lock i.text-danger {
+            color: #dc2626;
+        }
+
+        .btn-edit i.text-warning {
+            color: #f59e0b;
+        }
+
+        .pagination .page-link {
+            color: #ff6a00;
+            border: 1px solid #ff6a00;
+        }
+
+        .pagination .active .page-link {
+            background-color: #ff6a00;
+            border-color: #ff6a00;
+            color: white;
         }
     </style>
 </head>
 <body>
-<!-- Main Content -->
-<div class="main-content">
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="d-flex align-items-center">
-            <i class="fas fa-users me-3 fs-2"></i>
-            <h1 class="mb-0">Customer Management</h1>
-        </div>
-    </div>
+<!-- Tiêu đề -->
+<div class="header">
+    <i class="fas fa-users"></i> Customer
+</div>
 
-    <!-- Customer Table -->
-    <div class="table-container">
-        <!-- Table Header -->
-        <div class="card-header bg-white p-4">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h5 class="mb-0 fw-bold">Customer Directory</h5>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex gap-3 justify-content-md-end">
-                        <div class="search-box">
-                            <input type="text" class="form-control" placeholder="Search customers...">
-                            <i class="fas fa-search search-icon"></i>
-                        </div>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>Add Customer
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Table -->
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Customer Name</th>
-                    <th>Email Address</th>
-                    <th>Phone Number</th>
-                    <th>Location</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td><span class="badge bg-secondary">001</span></td>
-                    <td>Leanne Graham</td>
-                    <td>sincere@gmail.com</td>
-                    <td>+1 (555) 123-4567</td>
-                    <td>Alabama, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">002</span></td>
-                    <td>Ervin Howell</td>
-                    <td>shanna@gmail.com</td>
-                    <td>+1 (555) 234-5678</td>
-                    <td>Alaska, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">003</span></td>
-                    <td>Clementine Bauch</td>
-                    <td>nathan@gmail.com</td>
-                    <td>+1 (555) 345-6789</td>
-                    <td>Arizona, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">004</span></td>
-                    <td>Patricia Lebsack</td>
-                    <td>lucio@gmail.com</td>
-                    <td>+1 (555) 456-7890</td>
-                    <td>Arkansas, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">005</span></td>
-                    <td>Kurtis Weissnat</td>
-                    <td>telly.hoeger@gmail.com</td>
-                    <td>+1 (555) 567-8901</td>
-                    <td>California, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">006</span></td>
-                    <td>Michael Baulck</td>
-                    <td>baulck1976@gmail.com</td>
-                    <td>+1 (555) 678-9012</td>
-                    <td>Hawaii, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">007</span></td>
-                    <td>Patrick Vlatra</td>
-                    <td>vlatra976@gmail.com</td>
-                    <td>+1 (555) 789-0123</td>
-                    <td>Idaho, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><span class="badge bg-secondary">008</span></td>
-                    <td>Doctor Gregra</td>
-                    <td>gregra1978@gmail.com</td>
-                    <td>+1 (555) 890-1234</td>
-                    <td>Kansas, USA</td>
-                    <td class="text-center">
-                        <button class="btn btn-warning btn-action" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-action" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="card-footer bg-white">
-            <nav>
-                <ul class="pagination justify-content-center mb-0">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                    <li class="page-item"><a class="page-link" href="#">6</a></li>
-                    <li class="page-item"><a class="page-link" href="#">7</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+<!-- Thanh trên: Nút và tìm kiếm -->
+<div class="top-bar">
+    <button class="btn-add">Add User</button>
+    <div class="search-box">
+        <input type="text" class="form-control" placeholder="Search here..."/>
+        <i class="fas fa-search"></i>
     </div>
 </div>
+
+<!-- Bảng -->
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+        <tr>
+            <th>STT</th>
+            <th>name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>address</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf lặp danh sách user -->
+        <tr th:each="user, stat : ${users}">
+            <td th:text="${stat.index + 1}">1</td>
+            <td th:text="${user.name}">Leanne Graham</td>
+            <td th:text="${user.email}">Sincere@gmail.com</td>
+            <td th:text="${user.phone}">0987654321</td>
+            <td th:text="${user.address}">Alabama</td>
+            <td>
+                <span th:if="${user.status}" class="status-active">Active</span>
+                <span th:unless="${user.status}" class="status-deactivate">Deactivate</span>
+            </td>
+            <td>
+                <button class="btn-action btn-lock" th:title="${user.status ? 'Lock' : 'Unlock'}">
+                    <i class="fas" th:classappend="${user.status} ? ' fa-lock-open text-success' : ' fa-lock text-danger'"></i>
+                </button>
+                <button class="btn-action btn-edit" title="Edit">
+                    <i class="fas fa-pen text-warning"></i>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Phân trang -->
+<nav class="d-flex justify-content-end mt-4">
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item active"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">4</a></li>
+        <li class="page-item"><a class="page-link" href="#">5</a></li>
+        <li class="page-item"><a class="page-link" href="#">6</a></li>
+        <li class="page-item"><a class="page-link" href="#">7</a></li>
+        <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+    </ul>
+</nav>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>

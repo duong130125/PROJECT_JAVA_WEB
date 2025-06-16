@@ -10,6 +10,7 @@ public interface ProductService {
     boolean addProduct(Product product);
     boolean updateProduct(Product product);
     boolean deleteProduct(int id);
+    Product findProductByName(String name);
     List<Product> searchProductsByBrand(String keyword);
     List<Product> searchPhonesByPriceRange(double minPrice, double maxPrice);
     List<Product> searchPhonesInStock(int stock);

@@ -39,6 +39,11 @@ public class ProductServiceIpml implements ProductService {
     }
 
     @Override
+    public Product findProductByName(String name) {
+        return  productRepo.findProductByName(name);
+    }
+
+    @Override
     public List<Product> searchProductsByBrand(String keyword) {
         return productRepo.searchProductsByBrand(keyword);
     }
