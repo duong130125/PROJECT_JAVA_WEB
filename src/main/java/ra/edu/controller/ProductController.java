@@ -16,6 +16,7 @@ import ra.edu.service.ProductService;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,136 +45,148 @@ public class ProductController {
     }
 
 
-    // Xử lý thêm/sửa sản phẩm thống nhất
     @PostMapping("/save")
-    public String saveProduct(@RequestParam(value = "id", required = false) Integer id,
-                              @RequestParam("name") String name,
-                              @RequestParam("brand") String brand,
-                              @RequestParam("price") Double price,
-                              @RequestParam("stock") Integer stock,
-                              @RequestParam("status") Boolean status,
-                              @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+    public String saveProduct(@Valid @ModelAttribute("productDTO") ProductDTO productDTO,
+                              BindingResult bindingResult,
+                              Model model,
                               RedirectAttributes redirectAttributes,
                               HttpSession session) {
 
+        // Kiểm tra đăng nhập admin
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
 
+        boolean isEdit = (productDTO.getId() != null && productDTO.getId() > 0);
+
+        // Thêm các attribute cần thiết cho modal
+        model.addAttribute("productDTO", productDTO);
+        model.addAttribute("isEdit", isEdit);
+
+        // Kiểm tra lỗi validation từ @Valid
+        if (bindingResult.hasErrors()) {
+            // Lấy danh sách sản phẩm để hiển thị lại trang
+            List<Product> products = productService.getAllProducts();
+            model.addAttribute("products", products);
+            model.addAttribute("openModal", true); // Mở lại modal khi có lỗi
+
+            // Log errors for debugging
+            bindingResult.getAllErrors().forEach(error -> {
+                System.out.println("Validation error: " + error.getDefaultMessage());
+            });
+
+            return "redirect:admin/products"; // Trả về trang hiện tại với modal mở
+        }
+
         try {
-            // --- VALIDATION ---
-            if (name == null || name.trim().isEmpty()) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Tên sản phẩm không được để trống!");
-                return "redirect:/admin/products";
-            }
-
-            if (brand == null || brand.trim().isEmpty()) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Thương hiệu không được để trống!");
-                return "redirect:/admin/products";
-            }
-
-            if (price == null || price <= 0) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Giá sản phẩm phải lớn hơn 0!");
-                return "redirect:/admin/products";
-            }
-
-            if (stock == null || stock < 0) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Số lượng tồn kho không được âm!");
-                return "redirect:/admin/products";
-            }
-
-            boolean isEdit = (id != null && id > 0);
-            Product existingProduct = productService.findProductByName(name.trim());
-
-            // --- KIỂM TRA TRÙNG TÊN ---
-            if (!isEdit && existingProduct != null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Tên sản phẩm đã tồn tại!");
-                return "redirect:/admin/products";
-            }
-
             Product product;
 
             if (isEdit) {
-                // --- CHẾ ĐỘ SỬA ---
-                product = productService.findProductById(id);
+                // Chế độ chỉnh sửa
+                product = productService.findProductById(productDTO.getId());
                 if (product == null) {
-                    redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy sản phẩm cần sửa!");
+                    redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy sản phẩm để cập nhật!");
+                    return "redirect:/admin/products";
+                }
+            } else {
+                // Chế độ thêm mới - kiểm tra tên trùng
+                Product existingByName = productService.findProductByName(productDTO.getName().trim());
+                if (existingByName != null) {
+                    List<Product> products = productService.getAllProducts();
+                    model.addAttribute("products", products);
+                    model.addAttribute("openModal", true);
+                    model.addAttribute("errorMessage", "Tên sản phẩm đã tồn tại!");
+                    return "redirect:/admin/products";
+                }
+                product = new Product();
+            }
+
+            // Gán các trường cơ bản
+            product.setName(productDTO.getName().trim());
+            product.setBrand(productDTO.getBrand());
+            product.setPrice(productDTO.getPrice());
+            product.setStock(productDTO.getStock());
+            product.setStatus(productDTO.getStatus() != null ? productDTO.getStatus() : true);
+
+            // Xử lý upload ảnh
+            MultipartFile imageFile = productDTO.getImageFile();
+            boolean hasNewImage = (imageFile != null && !imageFile.isEmpty());
+
+            if (hasNewImage) {
+                // Validate file type
+                String contentType = imageFile.getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    List<Product> products = productService.getAllProducts();
+                    model.addAttribute("products", products);
+                    model.addAttribute("openModal", true);
+                    model.addAttribute("errorMessage", "File phải là hình ảnh!");
                     return "redirect:/admin/products";
                 }
 
-                product.setName(name.trim());
-                product.setBrand(brand);
-                product.setPrice(price);
-                product.setStock(stock);
-                product.setStatus(status);
+                // Validate file size (10MB)
+                if (imageFile.getSize() > 10 * 1024 * 1024) {
+                    List<Product> products = productService.getAllProducts();
+                    model.addAttribute("products", products);
+                    model.addAttribute("openModal", true);
+                    model.addAttribute("errorMessage", "File không được vượt quá 10MB!");
+                    return "redirect:/admin/products";
+                }
 
-                // Xử lý ảnh nếu có file mới
-                if (imageFile != null && !imageFile.isEmpty()) {
-                    String contentType = imageFile.getContentType();
-                    if (contentType == null || (!contentType.startsWith("image/"))) {
-                        redirectAttributes.addFlashAttribute("errorMessage", "File phải là hình ảnh (PNG, JPG, JPEG)!");
-                        return "redirect:/admin/products";
-                    }
-
-                    if (imageFile.getSize() > 10 * 1024 * 1024) {
-                        redirectAttributes.addFlashAttribute("errorMessage", "Kích thước file không được vượt quá 10MB!");
-                        return "redirect:/admin/products";
-                    }
-
+                // Upload to Cloudinary
+                try {
                     String imageUrl = uploadToCloudinary(imageFile);
                     product.setImage(imageUrl);
+                } catch (Exception e) {
+                    List<Product> products = productService.getAllProducts();
+                    model.addAttribute("products", products);
+                    model.addAttribute("openModal", true);
+                    model.addAttribute("errorMessage", "Lỗi khi upload ảnh: " + e.getMessage());
+                    return "redirect:/admin/products";
                 }
-
-                boolean updated = productService.updateProduct(product);
-                if (updated) {
-                    redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công!");
-                } else {
-                    redirectAttributes.addFlashAttribute("errorMessage", "Cập nhật sản phẩm thất bại!");
-                }
-
             } else {
-                // --- CHẾ ĐỘ THÊM MỚI ---
-                product = new Product();
-                product.setName(name.trim());
-                product.setBrand(brand);
-                product.setPrice(price);
-                product.setStock(stock);
-                product.setStatus(status != null ? status : true); // Mặc định là true
-
-                // Xử lý ảnh
-                if (imageFile != null && !imageFile.isEmpty()) {
-                    String contentType = imageFile.getContentType();
-                    if (contentType == null || (!contentType.startsWith("image/"))) {
-                        redirectAttributes.addFlashAttribute("errorMessage", "File phải là hình ảnh (PNG, JPG, JPEG)!");
-                        return "redirect:/admin/products";
-                    }
-
-                    if (imageFile.getSize() > 10 * 1024 * 1024) {
-                        redirectAttributes.addFlashAttribute("errorMessage", "Kích thước file không được vượt quá 10MB!");
-                        return "redirect:/admin/products";
-                    }
-
-                    String imageUrl = uploadToCloudinary(imageFile);
-                    product.setImage(imageUrl);
-                }
-
-                boolean saved = productService.addProduct(product);
-                if (saved) {
-                    redirectAttributes.addFlashAttribute("successMessage", "Thêm sản phẩm thành công!");
+                // Không có ảnh mới được upload
+                if (!isEdit) {
+                    // Thêm mới mà không có ảnh
+                    List<Product> products = productService.getAllProducts();
+                    model.addAttribute("products", products);
+                    model.addAttribute("openModal", true);
+                    model.addAttribute("errorMessage", "Vui lòng chọn ảnh cho sản phẩm!");
+                    return "redirect:/admin/products";
                 } else {
-                    redirectAttributes.addFlashAttribute("errorMessage", "Thêm sản phẩm thất bại!");
+                    // Chỉnh sửa mà không upload ảnh mới - giữ ảnh cũ
+                    Product existingProduct = productService.findProductById(productDTO.getId());
+                    if (existingProduct != null && existingProduct.getImage() != null) {
+                        product.setImage(existingProduct.getImage());
+                    }
                 }
             }
 
-        } catch (IOException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi upload ảnh: " + e.getMessage());
+            // Lưu vào database
+            boolean result;
+            if (isEdit) {
+                result = productService.updateProduct(product);
+            } else {
+                result = productService.addProduct(product);
+            }
+
+            if (result) {
+                String successMessage = isEdit ? "Cập nhật sản phẩm thành công!" : "Thêm sản phẩm thành công!";
+                redirectAttributes.addFlashAttribute("successMessage", successMessage);
+            } else {
+                String errorMessage = isEdit ? "Cập nhật sản phẩm thất bại!" : "Thêm sản phẩm thất bại!";
+                redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            }
+
         } catch (Exception e) {
+            // Log exception
+            System.err.println("Error saving product: " + e.getMessage());
+            e.printStackTrace();
+
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi hệ thống: " + e.getMessage());
         }
 
         return "redirect:/admin/products";
     }
-
 
     // Xóa sản phẩm
     @PostMapping("/delete/{id}")
@@ -207,73 +220,68 @@ public class ProductController {
         return "redirect:/admin/products";
     }
 
-    // Tìm kiếm sản phẩm theo thương hiệu
-    @GetMapping("/searchBrand")
-    public String searchProductsByBrand(@RequestParam(value = "brand", required = false) String brand,
-                                        Model model,
-                                        HttpSession session) {
-
+    @GetMapping("/search")
+    public String search(
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String priceRange,
+            @RequestParam(required = false) String stock,
+            Model model,
+            HttpSession session
+    ) {
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
 
         try {
-            List<Product> products;
+            Double minPrice = null;
+            Double maxPrice = null;
+            Integer stockInt = null;
 
-            if (brand != null && !brand.trim().isEmpty()) {
-                products = productService.searchProductsByBrand(brand.trim());
-                model.addAttribute("searchBrand", brand.trim());
-
-                if (products.isEmpty()) {
-                    model.addAttribute("infoMessage", "Không tìm thấy sản phẩm nào với thương hiệu: " + brand);
+            // Xử lý khoảng giá
+            if (priceRange != null && !priceRange.isEmpty()) {
+                String[] parts = priceRange.split("-");
+                if (parts.length == 2) {
+                    try {
+                        minPrice = Double.parseDouble(parts[0]);
+                        maxPrice = Double.parseDouble(parts[1]);
+                        if (minPrice > maxPrice) {
+                            minPrice = null;
+                            maxPrice = null;
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
                 }
-            } else {
-                products = productService.getAllProducts();
-                model.addAttribute("infoMessage", "Vui lòng nhập từ khóa tìm kiếm!");
+                model.addAttribute("searchPriceRange", priceRange);
+            }
+
+            // Xử lý tồn kho
+            if (stock != null && !stock.isEmpty()) {
+                try {
+                    stockInt = Integer.parseInt(stock);
+                    model.addAttribute("searchStock", stock);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+
+            // Xử lý thương hiệu
+            if (brand != null && !brand.trim().isEmpty()) {
+                model.addAttribute("searchBrand", brand.trim());
+            }
+
+            // Tìm kiếm sản phẩm
+            List<Product> results = productService.searchProducts(brand, minPrice, maxPrice, stockInt);
+
+            if (results.isEmpty()) {
+                model.addAttribute("infoMessage", "Không tìm thấy sản phẩm phù hợp với tiêu chí tìm kiếm.");
             }
 
             model.addAttribute("view", "products");
-            model.addAttribute("products", products);
+            model.addAttribute("products", results);
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi tìm kiếm: " + e.getMessage());
-            model.addAttribute("products", "products");
-        }
-
-        return "homeAdmin";
-    }
-
-    @GetMapping("/searchByPriceAndStock")
-    public String searchByPriceAndStock(@RequestParam(value = "minPrice", required = false) Double minPrice,
-                                        @RequestParam(value = "maxPrice", required = false) Double maxPrice,
-                                        @RequestParam(value = "stock", required = false) Integer stock,
-                                        Model model,
-                                        HttpSession session) {
-        if (session.getAttribute("adminLogin") == null) {
-            return "redirect:/login";
-        }
-
-        try {
-            List<Product> products;
-
-            if (minPrice != null && maxPrice != null) {
-                products = productService.searchPhonesByPriceRange(minPrice, maxPrice);
-                model.addAttribute("infoMessage", "Kết quả tìm kiếm theo khoảng giá từ " + minPrice + " đến " + maxPrice);
-            } else if (stock != null) {
-                products = productService.searchPhonesInStock(stock);
-                model.addAttribute("infoMessage", "Kết quả tìm kiếm các sản phẩm có tồn kho >= " + stock);
-            } else {
-                products = productService.getAllProducts();
-                model.addAttribute("infoMessage", "Vui lòng nhập điều kiện tìm kiếm!");
-            }
-
-            model.addAttribute("products", products);
             model.addAttribute("view", "products");
-
-        } catch (Exception e) {
-            model.addAttribute("errorMessage", "Lỗi khi tìm kiếm: " + e.getMessage());
-            model.addAttribute("products", productService.getAllProducts());
-            model.addAttribute("view", "products");
+            model.addAttribute("products", new ArrayList<>());
         }
 
         return "homeAdmin";
@@ -294,31 +302,5 @@ public class ProductController {
         } catch (Exception e) {
             throw new IOException("Lỗi khi upload ảnh lên Cloudinary: " + e.getMessage());
         }
-    }
-
-    // Chuyển DTO sang Entity (nếu cần dùng DTO)
-    private Product convertToEntity(ProductDTO dto) {
-        Product p = new Product();
-        p.setId(dto.getId());
-        p.setName(dto.getName());
-        p.setPrice(dto.getPrice());
-        p.setBrand(dto.getBrand());
-        p.setStock(dto.getStock());
-        p.setImage(dto.getImage());
-        p.setStatus(dto.isStatus());
-        return p;
-    }
-
-    // Chuyển Entity sang DTO (nếu cần dùng DTO)
-    private ProductDTO convertToDTO(Product product) {
-        ProductDTO dto = new ProductDTO();
-        dto.setId(product.getId());
-        dto.setName(product.getName());
-        dto.setPrice(product.getPrice());
-        dto.setBrand(product.getBrand());
-        dto.setStock(product.getStock());
-        dto.setImage(product.getImage());
-        dto.setStatus(product.isStatus());
-        return dto;
     }
 }

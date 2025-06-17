@@ -29,7 +29,7 @@ public class Product {
     private double price;
 
     @Column(name = "product_stock", nullable = false)
-    private int Stock;
+    private int stock;
 
     @Column(name = "product_image", nullable = false)
     private String image;

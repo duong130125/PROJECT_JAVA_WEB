@@ -122,45 +122,34 @@ public class ProductRepoImpl implements ProductRepo {
     }
 
     @Override
-    public List<Product> searchProductsByBrand(String keyword) {
+    public List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock) {
         Session session = sessionFactory.openSession();
         try {
-            String hql = "FROM Product p WHERE p.brand LIKE :keyword";
-            Query<Product> query = session.createQuery(hql, Product.class);
-            query.setParameter("keyword", "%" + keyword + "%");
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        } finally {
-            session.close();
-        }
-    }
+            StringBuilder hql = new StringBuilder("FROM Product p WHERE 1=1");
 
-    @Override
-    public List<Product> searchPhonesByPriceRange(double minPrice, double maxPrice) {
-        Session session = sessionFactory.openSession();
-        try {
-            String hql = "FROM Product p WHERE p.price BETWEEN :min AND :max";
-            Query<Product> query = session.createQuery(hql, Product.class);
-            query.setParameter("min", minPrice);
-            query.setParameter("max", maxPrice);
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        } finally {
-            session.close();
-        }
-    }
+            if (brand != null && !brand.trim().isEmpty()) {
+                hql.append(" AND lower(p.brand) LIKE :brand");
+            }
+            if (minPrice != null && maxPrice != null && minPrice <= maxPrice) {
+                hql.append(" AND p.price BETWEEN :minPrice AND :maxPrice");
+            }
+            if (stock != null && stock > 0) {
+                hql.append(" AND p.stock >= :stock");
+            }
 
-    @Override
-    public List<Product> searchPhonesInStock(int stock) {
-        Session session = sessionFactory.openSession();
-        try {
-            String hql = "FROM Product p WHERE p.Stock >= :stock";
-            Query<Product> query = session.createQuery(hql, Product.class);
-            query.setParameter("stock", stock);
+            Query<Product> query = session.createQuery(hql.toString(), Product.class);
+
+            if (brand != null && !brand.trim().isEmpty()) {
+                query.setParameter("brand", "%" + brand.toLowerCase() + "%");
+            }
+            if (minPrice != null && maxPrice != null && minPrice <= maxPrice) {
+                query.setParameter("minPrice", minPrice);
+                query.setParameter("maxPrice", maxPrice);
+            }
+            if (stock != null && stock > 0) {
+                query.setParameter("stock", stock);
+            }
+
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();

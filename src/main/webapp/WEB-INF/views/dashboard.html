@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div th:fragment="content">
@@ -173,7 +171,7 @@
                     <div class="card-body text-center py-3">
                         <i class="fas fa-users icon-large" style="color: #007bff;"></i>
                         <h2 class="card-number" style="color: #007bff;" th:text="${totalUsers ?: 0}">0</h2>
-                        <p class="card-title mb-1">TỔNG USERS</p>
+                        <p class="card-title mb-1">TỔNG CUSTOMER</p>
                         <p class="card-subtitle mb-0" style="color: #28a745;">
                             <i class="fas fa-user-check"></i>
                             <span th:text="${activeUsers ?: 0}">0</span> hoạt động
@@ -257,17 +255,14 @@
                         Thao Tác Nhanh
                     </h5>
                     <div class="text-center">
-                        <a href="#" th:href="@{/users/add}" class="action-btn btn-add-user">
-                            <i class="fas fa-user-plus me-1"></i> Thêm User
+                        <a href="#" th:href="@{/admin/customers}" class="action-btn btn-add-user">
+                            <i class="fas fa-user-plus me-1"></i> Thêm Customer
                         </a>
-                        <a href="#" th:href="@{/products/add}" class="action-btn btn-add-product">
+                        <a href="#" th:href="@{/admin/products}" class="action-btn btn-add-product">
                             <i class="fas fa-plus me-1"></i> Thêm Product
                         </a>
-                        <a href="#" th:href="@{/orders}" class="action-btn btn-view-orders">
-                            <i class="fas fa-eye me-1"></i> Xem Orders
-                        </a>
-                        <a href="#" th:href="@{/dashboard/refresh}" class="action-btn btn-refresh">
-                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                        <a href="#" th:href="@{/admin/invoices}" class="action-btn btn-view-orders">
+                            <i class="fas fa-eye me-1"></i> Xem Invoice
                         </a>
                     </div>
                 </div>
@@ -275,7 +270,5 @@
         </div>
     </div>
 </div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

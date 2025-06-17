@@ -1,19 +1,13 @@
 package ra.edu.dto;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 
 @Data
-@Getter
-@Setter
 public class ProductDTO {
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Tên sản phẩm không được để trống")
     private String name;
@@ -29,8 +23,9 @@ public class ProductDTO {
     @Min(value = 0, message = "Tồn kho không được nhỏ hơn 0")
     private Integer stock;
 
-    @NotBlank(message = "Ảnh của sản phẩm không được để trống")
-    private String image;
+    // Dùng field imageFile để nhận file từ form
+    private MultipartFile imageFile;
 
-    private boolean status;
+    private Boolean status;
 }
+

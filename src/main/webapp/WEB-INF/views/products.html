@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products Management</title>
-    <!-- Fixed: Use matching Bootstrap versions -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Products Management - Fixed</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div th:fragment="content">
@@ -36,27 +35,6 @@
         .btn-add-product:hover {
             background-color: #e55a2b;
             color: white;
-        }
-
-        .search-box {
-            max-width: 250px;
-        }
-
-        .search-input {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 8px 12px;
-            padding-right: 40px;
-        }
-
-        .search-btn {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #666;
         }
 
         .products-table {
@@ -126,59 +104,6 @@
             transition: all 0.2s;
         }
 
-        .btn-view {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .btn-view:hover {
-            background-color: #5a6268;
-        }
-
-        .btn-edit {
-            background-color: #ffc107;
-            color: #212529;
-        }
-
-        .btn-edit:hover {
-            background-color: #e0a800;
-        }
-
-        .pagination-wrapper {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .pagination .page-link {
-            color: #495057;
-            border: 1px solid #dee2e6;
-            padding: 8px 12px;
-            margin: 0 2px;
-            border-radius: 4px;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #ff6b35;
-            border-color: #ff6b35;
-            color: white;
-        }
-
-        .pagination .page-link:hover {
-            background-color: #f8f9fa;
-            color: #ff6b35;
-        }
-
-        .table-responsive {
-            border-radius: 8px;
-        }
-
-        .price-text {
-            font-weight: 500;
-            color: #495057;
-        }
-
-        /* Modal Styles */
         .modal-content {
             border-radius: 12px;
             border: none;
@@ -244,6 +169,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
 
         .upload-area:hover {
@@ -311,6 +237,11 @@
             border-radius: 6px;
             margin-top: 10px;
         }
+
+        .price-text {
+            font-weight: 500;
+            color: #495057;
+        }
     </style>
 
     <div class="container-fluid px-4 py-3">
@@ -321,50 +252,56 @@
                     <i class="fas fa-box me-2" style="color: #495057;"></i>
                     <h4 class="mb-0" style="color: #495057;">Products</h4>
                 </div>
+
                 <div class="d-flex align-items-center gap-3">
-                    <!-- Search by Price and Stock -->
-                    <form th:action="@{/admin/products/searchByPriceAndStock}" method="get" class="row g-3 align-items-end">
+                    <form th:action="@{/admin/products/search}" method="get" class="row g-3 align-items-end mb-4">
+                        <!-- Thương hiệu -->
                         <div class="col-md-3">
-                            <label for="minPrice" class="form-label">Giá tối thiểu</label>
-                            <input type="number" step="0.01" class="form-control" id="minPrice" name="minPrice" placeholder="Từ...">
+                            <label for="brand" class="form-label">Thương hiệu</label>
+                            <input type="text" class="form-control" id="brand" name="brand"
+                                   placeholder="Nhập tên thương hiệu..."
+                                   th:value="${param.brand}">
                         </div>
+
+                        <!-- Khoảng giá -->
                         <div class="col-md-3">
-                            <label for="maxPrice" class="form-label">Giá tối đa</label>
-                            <input type="number" step="0.01" class="form-control" id="maxPrice" name="maxPrice" placeholder="Đến...">
+                            <label for="priceRange" class="form-label">Khoảng giá</label>
+                            <select class="form-select" id="priceRange" name="priceRange">
+                                <option value="">-- Chọn khoảng giá --</option>
+                                <option value="0-5000000" th:selected="${param.priceRange == '0-5000000'}">Dưới 5
+                                    triệu
+                                </option>
+                                <option value="5000000-10000000"
+                                        th:selected="${param.priceRange == '5000000-10000000'}">5 - 10 triệu
+                                </option>
+                                <option value="10000000-20000000"
+                                        th:selected="${param.priceRange == '10000000-20000000'}">10 - 20 triệu
+                                </option>
+                                <option value="20000000-50000000"
+                                        th:selected="${param.priceRange == '20000000-50000000'}">20 - 50 triệu
+                                </option>
+                            </select>
                         </div>
+
+                        <!-- Tồn kho -->
                         <div class="col-md-3">
                             <label for="stock" class="form-label">Tồn kho lớn hơn</label>
-                            <input type="number" class="form-control" id="stock" name="stock" placeholder="Số lượng tồn kho">
+                            <input type="number" class="form-control" id="stock" name="stock" placeholder="Số lượng"
+                                   th:value="${param.stock}">
                         </div>
+
+                        <!-- Nút lọc -->
                         <div class="col-md-3">
                             <button type="submit" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-filter me-2"></i>Lọc sản phẩm
+                                <i class="fas fa-filter me-2"></i>tìm kiếm
                             </button>
                         </div>
                     </form>
-
-                    <!-- Search Form -->
-                    <div class="search-form">
-                        <form th:action="@{/admin/products/searchBrand}" method="get" class="row g-3 align-items-end">
-                            <div class="col-md-8">
-                                <label for="brand" class="form-label">
-                                    <i class="fas fa-search me-2"></i>Tìm kiếm theo thương hiệu
-                                </label>
-                                <input type="text" class="form-control" id="brand" name="brand"
-                                       th:value="${searchBrand}" placeholder="Nhập tên thương hiệu...">
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-outline-secondary w-100">
-                                    <i class="fas fa-search me-2"></i>Tìm kiếm
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- Add Product Button - Fixed: Removed onclick and used event listener -->
-                    <button class="btn btn-add-product" id="addProductBtn" data-bs-toggle="modal" data-bs-target="#productModal">
-                        <i class="fas fa-plus me-2"></i>Add Product
-                    </button>
                 </div>
+
+                <button type="button" class="btn btn-add-product" id="addProductBtn">
+                    <i class="fas fa-plus me-2"></i>Add Product
+                </button>
             </div>
         </div>
 
@@ -409,7 +346,9 @@
                                  class="product-img">
                             <span th:unless="${product.image}" class="text-muted">No image</span>
                         </td>
-                        <td class="price-text" th:text="${product.price + ' $'}">1,200 $</td>
+                        <td class="price-text"
+                            th:text="${product.price % 1 == 0 ? #numbers.formatDecimal(product.price, 0, 0) + ' VNĐ' : #numbers.formatDecimal(product.price, 0, 2) + ' VNĐ'}">
+                        </td>
                         <td th:text="${product.stock}">10</td>
                         <td>
                             <span th:class="${product.status == true ? 'status-badge status-active' : 'status-badge status-deactivate'}"
@@ -419,9 +358,7 @@
                         </td>
                         <td>
                             <div class="action-buttons">
-                                <!-- Fixed: Using data attributes instead of inline onclick -->
-                                <button type="button" class="btn btn-warning btn-sm edit-btn" title="Sửa"
-                                        data-bs-toggle="modal" data-bs-target="#productModal"
+                                <button type="button" class="btn btn-warning btn-sm edit-btn" title="Edit"
                                         th:data-id="${product.id}"
                                         th:data-name="${product.name}"
                                         th:data-brand="${product.brand}"
@@ -436,25 +373,26 @@
                                         th:data-bs-target="'#deleteModal' + ${product.id}">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </div>
-
-                            <!-- Delete Modal -->
-                            <div class="modal fade" th:id="'deleteModal' + ${product.id}" tabindex="-1">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Xác nhận xóa</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Bạn có chắc chắn muốn xóa sản phẩm <strong th:text="${product.name}"></strong> không?</p>
-                                            <p class="text-danger"><small>Hành động này không thể hoàn tác!</small></p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                            <form th:action="@{/admin/products/delete/{id}(id=${product.id})}" method="post" style="display: inline;">
-                                                <button type="submit" class="btn btn-danger">Xóa</button>
-                                            </form>
+                                <div class="modal fade" th:id="'deleteModal' + ${product.id}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Xác nhận xóa</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Bạn có chắc chắn muốn xóa sản phẩm <strong
+                                                        th:text="${product.name}"></strong> không?</p>
+                                                <p class="text-danger"><small>Hành động này không thể hoàn tác!</small></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy
+                                                </button>
+                                                <form th:action="@{/admin/products/delete/{id}(id=${product.id})}" method="post"
+                                                      style="display: inline;">
+                                                    <button type="submit" class="btn btn-danger">Xóa</button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -475,33 +413,29 @@
         </div>
     </div>
 
-    <!-- Product Modal (Add/Edit) -->
-    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
             <div class="modal-content">
-                <form id="productForm" th:action="@{/admin/products/save}" method="post" enctype="multipart/form-data">
+                <form id="productForm" enctype="multipart/form-data" method="POST" action="/admin/products/save" novalidate>
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalTitle">Add Product</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Hidden ID field for edit -->
-                        <input type="hidden" id="productId" name="id">
+                        <input type="hidden" id="productId">
 
                         <!-- Name -->
                         <div class="mb-3">
-                            <label for="name" class="form-label required">Name</label>
-                            <input type="text" class="form-control" id="name" name="name"
-                                   placeholder="Enter product name" required>
-                            <div th:if="${errorMessage}" class="invalid-feedback" >
-                                <span th:text="${errorMessage}"></span>
-                            </div>
+                            <label for="productName" class="form-label required">Name</label>
+                            <input type="text" class="form-control" id="productName" maxlength="100" required>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <!-- Brand -->
                         <div class="mb-3">
-                            <label for="brandSelect" class="form-label required">Brand</label>
-                            <select class="form-select" id="brandSelect" name="brand" required>
+                            <label for="productBrand" class="form-label required">Brand</label>
+                            <select class="form-select" id="productBrand" required>
                                 <option value="">Select brand</option>
                                 <option value="APPLE">Apple</option>
                                 <option value="SAMSUNG">Samsung</option>
@@ -511,220 +445,264 @@
                                 <option value="OPPO">Oppo</option>
                                 <option value="VIVO">Vivo</option>
                                 <option value="HUAWEI">Huawei</option>
+                                <option value="REALME">Realme</option>
+                                <option value="LENOVO">Lenovo</option>
                             </select>
-                            <div class="invalid-feedback">Please select a brand.</div>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <!-- Price -->
                         <div class="mb-3">
-                            <label for="price" class="form-label required">Price</label>
+                            <label for="productPrice" class="form-label required">Price</label>
                             <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" id="price" name="price" placeholder="0.00"
-                                       step="0.01" min="0" required>
+                                <span class="input-group-text">₫</span>
+                                <input type="number" class="form-control" id="productPrice" placeholder="0.00" step="0.01" min="0.01" required>
                             </div>
-                            <div class="invalid-feedback">Please enter a valid price.</div>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <!-- Stock -->
                         <div class="mb-3">
-                            <label for="stock" class="form-label required">Stock</label>
-                            <input type="number" class="form-control" id="stock" name="stock"
-                                   placeholder="Enter quantity" min="0" required>
-                            <div class="invalid-feedback">Please enter stock quantity.</div>
+                            <label for="productStock" class="form-label required">Stock</label>
+                            <input type="number" class="form-control" id="productStock" min="0" required>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <!-- Status -->
                         <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-select" id="status" name="status">
+                            <label for="productStatus" class="form-label">Status</label>
+                            <select class="form-select" id="productStatus">
                                 <option value="true">Active</option>
                                 <option value="false">Inactive</option>
                             </select>
                         </div>
 
-                        <!-- Upload Image -->
+                        <!-- Image -->
                         <div class="mb-3">
                             <label class="form-label">Image</label>
-                            <div class="upload-area" id="uploadArea" onclick="document.getElementById('imageFile').click()">
+                            <div class="upload-area" id="uploadArea">
                                 <div id="uploadContent">
                                     <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                                    <div style="font-size: 14px; color: #666;">Click to upload image</div>
-                                    <small style="font-size: 12px; color: #999;">PNG, JPG up to 10MB</small>
+                                    <div style="font-size: 14px;">Click to upload image</div>
+                                    <small style="font-size: 12px;">PNG, JPG, GIF, WebP up to 10MB</small>
                                 </div>
                             </div>
-                            <input type="file" class="d-none" id="imageFile" name="imageFile" accept="image/*">
-                            <div id="imagePreview"></div>
+                            <input type="file" class="d-none" id="imageFile" accept="image/*">
+                            <div id="imagePreview" class="mt-2"></div>
                         </div>
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-save" id="submitBtn">
-                            <span class="spinner-border spinner-border-sm d-none me-2" id="submitSpinner"></span>
-                            Save
+                            <span class="spinner-border spinner-border-sm d-none" id="submitSpinner"></span>
+                            <span id="submitText">Save</span>
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Bootstrap JS - Fixed: Moved to end and using proper version -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        console.log('Script loaded');
 
-<script th:inline="javascript">
-    // Wait for DOM to be fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM loaded');
 
-        // Open Add Modal - Fixed: Using event listener instead of inline onclick
-        const addProductBtn = document.getElementById('addProductBtn');
-        if (addProductBtn) {
-            addProductBtn.addEventListener('click', function() {
-                openAddModal();
-            });
-        }
+            const modalEl = document.getElementById('productModal');
+            const modal = new bootstrap.Modal(modalEl);
 
-        // Handle Edit Modal - Fixed: Using event delegation
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.edit-btn')) {
-                const btn = e.target.closest('.edit-btn');
-                const id = btn.dataset.id;
-                const name = btn.dataset.name;
-                const brand = btn.dataset.brand;
-                const price = btn.dataset.price;
-                const stock = btn.dataset.stock;
-                const image = btn.dataset.image;
-                const status = btn.dataset.status;
-
-                openEditModal(id, name, brand, price, stock, image, status);
+            // Add Product Button
+            const addBtn = document.getElementById('addProductBtn');
+            if (addBtn) {
+                console.log('Add button found');
+                addBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log("Add Product clicked");
+                    openAddModal();
+                    modal.show();
+                });
+            } else {
+                console.log('Add button NOT found');
             }
+
+            // Edit Product Buttons - Sử dụng event delegation
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.edit-btn')) {
+                    e.preventDefault();
+                    const btn = e.target.closest('.edit-btn');
+                    console.log("Edit Product clicked", btn);
+
+                    const data = {
+                        id: btn.getAttribute('data-id'),
+                        name: btn.getAttribute('data-name'),
+                        brand: btn.getAttribute('data-brand'),
+                        price: btn.getAttribute('data-price'),
+                        stock: btn.getAttribute('data-stock'),
+                        image: btn.getAttribute('data-image'),
+                        status: btn.getAttribute('data-status')
+                    };
+
+                    console.log('Product data:', data);
+                    openEditModal(data);
+                    modal.show();
+                }
+            });
+
+            // Upload area click
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('imageFile');
+
+            if (uploadArea && fileInput) {
+                uploadArea.addEventListener('click', function() {
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener('change', handleFileUpload);
+            }
+
+            // Form submission
+            const productForm = document.getElementById('productForm');
+            if (productForm) {
+                productForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submitted');
+
+                    // Show loading state
+                    const submitBtn = document.getElementById('submitBtn');
+                    const submitSpinner = document.getElementById('submitSpinner');
+                    const submitText = document.getElementById('submitText');
+
+                    submitBtn.disabled = true;
+                    submitSpinner.classList.remove('d-none');
+                    submitText.textContent = 'Saving...';
+
+                    // Simulate save (replace with actual save logic)
+                    setTimeout(() => {
+                        console.log('Save completed');
+                        modal.hide();
+                        resetForm();
+
+                        // Reset button state
+                        submitBtn.disabled = false;
+                        submitSpinner.classList.add('d-none');
+                        submitText.textContent = 'Save';
+                    }, 2000);
+                });
+            }
+
+            // Reset form when modal is hidden
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                resetForm();
+            });
         });
 
-        // Handle file upload preview
-        const imageFile = document.getElementById('imageFile');
-        if (imageFile) {
-            imageFile.addEventListener('change', function(e) {
-                handleFileUpload(e);
-            });
-        }
-
-        // Handle form submission
-        const productForm = document.getElementById('productForm');
-        if (productForm) {
-            productForm.addEventListener('submit', function(e) {
-                handleFormSubmit();
-            });
-        }
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-    });
-
-    // Open Add Modal
-    function openAddModal() {
-        console.log('Opening add modal'); // Debug log
-        try {
+        function openAddModal() {
+            console.log('Opening add modal');
             document.getElementById('modalTitle').textContent = 'Add Product';
-            document.getElementById('productForm').reset();
-            document.getElementById('productId').value = '';
-            document.getElementById('uploadArea').classList.remove('has-file');
-            document.getElementById('imagePreview').innerHTML = '';
-            document.getElementById('uploadContent').innerHTML = `
-                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                <div style="font-size: 14px; color: #666;">Click to upload image</div>
-                <small style="font-size: 12px; color: #999;">PNG, JPG up to 10MB</small>
-            `;
-        } catch (error) {
-            console.error('Error in openAddModal:', error);
+            document.getElementById('submitText').textContent = 'Save';
+            resetForm();
         }
-    }
 
-    // Open Edit Modal
-    function openEditModal(id, name, brand, price, stock, image, status) {
-        console.log('Opening edit modal for product:', id); // Debug log
-        try {
+        function openEditModal(data) {
+            console.log('Opening edit modal with data:', data);
             document.getElementById('modalTitle').textContent = 'Edit Product';
-            document.getElementById('productId').value = id;
-            document.getElementById('name').value = name;
-            document.getElementById('brandSelect').value = brand;
-            document.getElementById('price').value = price;
-            document.getElementById('stock').value = stock;
-            document.getElementById('status').value = status;
+            document.getElementById('submitText').textContent = 'Update';
+
+            // Populate form fields
+            document.getElementById('productId').value = data.id || '';
+            document.getElementById('productName').value = data.name || '';
+            document.getElementById('productBrand').value = data.brand || '';
+            document.getElementById('productPrice').value = data.price || '';
+            document.getElementById('productStock').value = data.stock || '';
+            document.getElementById('productStatus').value = data.status || 'true';
 
             // Handle image preview
-            if (image && image !== 'null' && image !== '') {
-                document.getElementById('uploadArea').classList.add('has-file');
-                document.getElementById('uploadContent').innerHTML = `
-                    <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
-                    <div style="font-size: 14px; color: #10b981;">Current image uploaded</div>
-                    <small style="font-size: 12px; color: #666;">Click to change image</small>
-                `;
-                document.getElementById('imagePreview').innerHTML = `
-                    <img src="${image}" class="preview-image" alt="Current image">
+            const imagePreview = document.getElementById('imagePreview');
+            const uploadContent = document.getElementById('uploadContent');
+
+            if (data.image && data.image !== 'null' && data.image !== '') {
+                imagePreview.innerHTML = `<img src="${data.image}" class="img-fluid rounded" alt="Current Image" style="max-height: 100px;">`;
+                uploadContent.innerHTML = `
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <div style="font-size: 14px; color: green;">Current image loaded</div>
+                    <small style="font-size: 12px;">Click to change image</small>
                 `;
             } else {
-                document.getElementById('uploadArea').classList.remove('has-file');
-                document.getElementById('imagePreview').innerHTML = '';
-                document.getElementById('uploadContent').innerHTML = `
+                imagePreview.innerHTML = '';
+                uploadContent.innerHTML = `
                     <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                    <div style="font-size: 14px; color: #666;">Click to upload image</div>
-                    <small style="font-size: 12px; color: #999;">PNG, JPG up to 10MB</small>
+                    <div style="font-size: 14px;">Click to upload image</div>
+                    <small style="font-size: 12px;">PNG, JPG, GIF, WebP up to 10MB</small>
                 `;
             }
-        } catch (error) {
-            console.error('Error in openEditModal:', error);
         }
-    }
 
-    // Handle file upload preview
-    function handleFileUpload(e) {
-        const file = e.target.files[0];
-        const uploadArea = document.getElementById('uploadArea');
-        const uploadContent = document.getElementById('uploadContent');
-        const imagePreview = document.getElementById('imagePreview');
+        function resetForm() {
+            console.log('Resetting form');
+            const form = document.getElementById('productForm');
+            form.reset();
 
-        if (file) {
-            uploadArea.classList.add('has-file');
-            uploadContent.innerHTML = `
-                <i class="fas fa-check-circle fa-2x mb-2 text-success"></i>
-                <div style="font-size: 14px; color: #10b981;">${file.name}</div>
-                <small style="font-size: 12px; color: #666;">Click to change image</small>
+            // Clear hidden fields and previews
+            document.getElementById('productId').value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('productStatus').value = 'true';
+
+            // Reset upload area
+            document.getElementById('uploadContent').innerHTML = `
+                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
+                <div style="font-size: 14px;">Click to upload image</div>
+                <small style="font-size: 12px;">PNG, JPG, GIF, WebP up to 10MB</small>
             `;
 
-            // Show preview
+            // Clear validation classes
+            const inputs = form.querySelectorAll('.form-control, .form-select');
+            inputs.forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+        }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            console.log('File selected:', file.name);
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please select a valid image file (PNG, JPG, GIF, WebP)');
+                return;
+            }
+
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB');
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
-                imagePreview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
+                const preview = document.getElementById('imagePreview');
+                const uploadContent = document.getElementById('uploadContent');
+
+                preview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded" alt="Preview" style="max-height: 100px;">`;
+                uploadContent.innerHTML = `
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <div style="font-size: 14px; color: green;">${file.name}</div>
+                    <small style="font-size: 12px;">Click to change image</small>
+                `;
+
+                // Add success state to upload area
+                const uploadArea = document.getElementById('uploadArea');
+                uploadArea.classList.add('has-file');
             };
             reader.readAsDataURL(file);
-        } else {
-            uploadArea.classList.remove('has-file');
-            uploadContent.innerHTML = `
-                <i class="fas fa-cloud-upload-alt fa-2x mb-2 text-muted"></i>
-                <div style="font-size: 14px; color: #666;">Click to upload image</div>
-                <small style="font-size: 12px; color: #999;">PNG, JPG up to 10MB</small>
-            `;
-            imagePreview.innerHTML = '';
         }
-    }
+    </script>
+</div>
 
-    // Handle form submission
-    function handleFormSubmit() {
-        const submitBtn = document.getElementById('submitBtn');
-        const spinner = document.getElementById('submitSpinner');
-
-        submitBtn.disabled = true;
-        spinner.classList.remove('d-none');
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
-    }
-</script>
 </body>
 </html>

@@ -44,17 +44,7 @@ public class ProductServiceIpml implements ProductService {
     }
 
     @Override
-    public List<Product> searchProductsByBrand(String keyword) {
-        return productRepo.searchProductsByBrand(keyword);
-    }
-
-    @Override
-    public List<Product> searchPhonesByPriceRange(double minPrice, double maxPrice) {
-        return productRepo.searchPhonesByPriceRange(minPrice, maxPrice);
-    }
-
-    @Override
-    public List<Product> searchPhonesInStock(int stock) {
-        return productRepo.searchPhonesInStock(stock);
+    public List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock) {
+        return productRepo.searchProducts(brand, minPrice, maxPrice, stock);
     }
 }

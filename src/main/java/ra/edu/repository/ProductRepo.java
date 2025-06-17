@@ -11,7 +11,5 @@ public interface ProductRepo {
     boolean updateProduct(Product product);
     boolean deleteProduct(int id);
     Product findProductByName(String name);
-    List<Product> searchProductsByBrand(String keyword);
-    List<Product> searchPhonesByPriceRange(double minPrice, double maxPrice);
-    List<Product> searchPhonesInStock(int stock);
+    List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock);
 }
