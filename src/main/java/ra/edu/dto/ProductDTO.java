@@ -26,6 +26,6 @@ public class ProductDTO {
     // Dùng field imageFile để nhận file từ form
     private MultipartFile imageFile;
 
-    private Boolean status;
+    private Boolean status = true;
 }
 

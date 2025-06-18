@@ -25,7 +25,7 @@ public class DashboardController {
             return "redirect:/login";
         }
         // Gắn nội dung của dashboard vào layout
-        model.addAttribute("view", "dashboard");
+        model.addAttribute("content", "dashboard");
         return "homeAdmin";
     }
 }

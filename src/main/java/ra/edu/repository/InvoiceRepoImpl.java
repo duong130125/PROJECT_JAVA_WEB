@@ -5,23 +5,23 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ra.edu.entity.Customer;
+import ra.edu.entity.Invoice;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class CustomerRepoImpl implements CustomerRepo {
+public class InvoiceRepoImpl implements InvoiceRepo {
 
     @Autowired
     private SessionFactory sessionFactory;
 
     @Override
-    public List<Customer> findAllCustomer() {
+    public List<Invoice> findAllInvoice() {
         Session session = sessionFactory.openSession();
         try {
-            String hql = "FROM Customer";
-            Query<Customer> query = session.createQuery(hql, Customer.class);
+            String hql = "SELECT i FROM Invoice i JOIN FETCH i.customer";
+            Query<Invoice> query = session.createQuery(hql, Invoice.class);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -32,10 +32,10 @@ public class CustomerRepoImpl implements CustomerRepo {
     }
 
     @Override
-    public Customer findCustomerById(Integer id) {
+    public Invoice findInvoiceById(Integer id) {
         Session session = sessionFactory.openSession();
         try {
-            return session.get(Customer.class, id);
+            return session.get(Invoice.class, id);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -45,11 +45,11 @@ public class CustomerRepoImpl implements CustomerRepo {
     }
 
     @Override
-    public boolean saveCustomer(Customer customer) {
+    public boolean saveInvoice(Invoice invoice) {
         Session session = sessionFactory.openSession();
         try {
             session.beginTransaction();
-            session.save(customer);
+            session.save(invoice);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -62,13 +62,13 @@ public class CustomerRepoImpl implements CustomerRepo {
     }
 
     @Override
-    public boolean deleteCustomer(Integer id) {
+    public boolean deleteInvoice(Integer id) {
         Session session = sessionFactory.openSession();
         try {
-            Customer customer = session.get(Customer.class, id);
-            if (customer != null) {
+            Invoice invoice = session.get(Invoice.class, id);
+            if (invoice != null) {
                 session.beginTransaction();
-                session.delete(customer);
+                session.delete(invoice);
                 session.getTransaction().commit();
                 return true;
             }
@@ -83,11 +83,11 @@ public class CustomerRepoImpl implements CustomerRepo {
     }
 
     @Override
-    public boolean updateCustomer(Customer customer) {
+    public boolean updateInvoice(Invoice invoice) {
         Session session = sessionFactory.openSession();
         try {
             session.beginTransaction();
-            session.update(customer);
+            session.update(invoice);
             session.getTransaction().commit();
             return true;
         } catch (Exception e) {
@@ -100,11 +100,11 @@ public class CustomerRepoImpl implements CustomerRepo {
     }
 
     @Override
-    public List<Customer> findCustomerByName(String name) {
+    public List<Invoice> findInvoiceByCustomerName(String name) {
         Session session = sessionFactory.openSession();
         try {
-            String hql = "FROM Customer WHERE name LIKE :name";
-            Query<Customer> query = session.createQuery(hql, Customer.class);
+            String hql = "FROM Invoice i WHERE i.customer.name LIKE :name";
+            Query<Invoice> query = session.createQuery(hql, Invoice.class);
             query.setParameter("name", "%" + name + "%");
             return query.getResultList();
         } catch (Exception e) {
@@ -114,4 +114,5 @@ public class CustomerRepoImpl implements CustomerRepo {
             session.close();
         }
     }
+
 }

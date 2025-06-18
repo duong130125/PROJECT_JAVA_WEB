@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Customer</title>
+<div th:if="${content == 'customers'}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet"/>
+
     <style>
         body {
             background-color: #f9f9f9;
@@ -110,76 +106,142 @@
             color: white;
         }
     </style>
-</head>
-<body>
-<!-- Tiêu đề -->
-<div class="header">
-    <i class="fas fa-users"></i> Customer
-</div>
 
-<!-- Thanh trên: Nút và tìm kiếm -->
-<div class="top-bar">
-    <button class="btn-add">Add User</button>
-    <div class="search-box">
-        <input type="text" class="form-control" placeholder="Search here..."/>
-        <i class="fas fa-search"></i>
+    <!-- Tiêu đề -->
+    <div class="header">
+        <i class="fas fa-users"></i> Customer
     </div>
+
+    <!-- Thanh trên: Nút và tìm kiếm -->
+    <div class="top-bar">
+        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#customerModal">Add Customer</button>
+        <div class="search-box">
+            <input type="text" class="form-control" placeholder="Search here..."/>
+            <i class="fas fa-search"></i>
+        </div>
+    </div>
+
+    <!-- Bảng -->
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+            <tr>
+                <th>STT</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="customer, stat : ${customers}">
+                <td th:text="${stat.index + 1}">1</td>
+                <td th:text="${customer.name}">Leanne Graham</td>
+                <td th:text="${customer.email}">Sincere@gmail.com</td>
+                <td th:text="${customer.phone}">0987654321</td>
+                <td th:text="${customer.address}">Alabama</td>
+                <td>
+                    <span th:if="${customer.status}" class="status-active">Active</span>
+                    <span th:unless="${customer.status}" class="status-deactivate">Deactivate</span>
+                </td>
+                <td>
+                    <button class="btn-action btn-lock" th:title="${customer.status ? 'Lock' : 'Unlock'}">
+                        <i class="fas" th:classappend="${customer.status} ? ' fa-lock-open text-success' : ' fa-lock text-danger'"></i>
+                    </button>
+                    <button class="btn-action btn-edit" title="Edit">
+                        <i class="fas fa-pen text-warning"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm"
+                            title="Xóa" data-bs-toggle="modal"
+                            th:data-bs-target="'#deleteModal' + ${customer.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <div class="modal fade" th:id="'deleteModal' + ${customer.id}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Xác nhận xóa</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Bạn có chắc chắn muốn xóa khách hàng <strong
+                                            th:text="${customer.name}"></strong> không?</p>
+                                    <p class="text-danger"><small>Hành động này không thể hoàn tác!</small></p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy
+                                    </button>
+                                    <form th:action="@{/admin/customers/delete/{id}(id=${customer.id})}" method="post"
+                                          style="display: inline;">
+                                        <button type="submit" class="btn btn-danger">Xóa</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal" id="customerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+            <div class="modal-content">
+                <form id="customerForm" th:action="@{/admin/customers/save}" method="post" th:object="${customerDTO}">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Customer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label>Name *</label>
+                            <input type="text" th:field="*{name}" class="form-control">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Email *</label>
+                            <input type="email" th:field="*{email}" class="form-control">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Phone *</label>
+                            <input type="tel" th:field="*{phone}" class="form-control">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label>Address *</label>
+                            <textarea th:field="*{address}" class="form-control"></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-warning">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phân trang -->
+    <nav class="d-flex justify-content-end mt-4">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item active"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">5</a></li>
+            <li class="page-item"><a class="page-link" href="#">6</a></li>
+            <li class="page-item"><a class="page-link" href="#">7</a></li>
+            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+        </ul>
+    </nav>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </div>
-
-<!-- Bảng -->
-<div class="table-responsive">
-    <table class="table table-hover">
-        <thead class="table-light">
-        <tr>
-            <th>STT</th>
-            <th>name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>address</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Thymeleaf lặp danh sách user -->
-        <tr th:each="user, stat : ${users}">
-            <td th:text="${stat.index + 1}">1</td>
-            <td th:text="${user.name}">Leanne Graham</td>
-            <td th:text="${user.email}">Sincere@gmail.com</td>
-            <td th:text="${user.phone}">0987654321</td>
-            <td th:text="${user.address}">Alabama</td>
-            <td>
-                <span th:if="${user.status}" class="status-active">Active</span>
-                <span th:unless="${user.status}" class="status-deactivate">Deactivate</span>
-            </td>
-            <td>
-                <button class="btn-action btn-lock" th:title="${user.status ? 'Lock' : 'Unlock'}">
-                    <i class="fas" th:classappend="${user.status} ? ' fa-lock-open text-success' : ' fa-lock text-danger'"></i>
-                </button>
-                <button class="btn-action btn-edit" title="Edit">
-                    <i class="fas fa-pen text-warning"></i>
-                </button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<!-- Phân trang -->
-<nav class="d-flex justify-content-end mt-4">
-    <ul class="pagination">
-        <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item active"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">4</a></li>
-        <li class="page-item"><a class="page-link" href="#">5</a></li>
-        <li class="page-item"><a class="page-link" href="#">6</a></li>
-        <li class="page-item"><a class="page-link" href="#">7</a></li>
-        <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
-    </ul>
-</nav>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>

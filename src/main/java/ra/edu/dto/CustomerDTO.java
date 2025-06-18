@@ -29,5 +29,5 @@ public class CustomerDTO {
     @NotBlank(message = "Địa chỉ không được để trống")
     private String address;
 
-    private boolean status;
+    private boolean status = true;
 }

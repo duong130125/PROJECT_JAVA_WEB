@@ -31,7 +31,7 @@ public class Invoice {
     @Column(nullable = false)
     private InvoiceStatus status = InvoiceStatus.PENDING;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER) // hợp lý
     @JoinColumn(name = "customer_id")
     private Customer customer;
 

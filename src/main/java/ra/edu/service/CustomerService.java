@@ -1,10 +1,10 @@
-package ra.edu.repository;
+package ra.edu.service;
 
 import ra.edu.entity.Customer;
 
 import java.util.List;
 
-public interface CustomerRepo {
+public interface CustomerService {
     List<Customer> findAllCustomer();
     Customer findCustomerById(Integer id);
     boolean saveCustomer(Customer customer);

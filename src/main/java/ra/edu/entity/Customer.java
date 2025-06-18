@@ -30,7 +30,8 @@ public class Customer {
     @Column(nullable = false)
     private String address;
 
-    private boolean status;
+    @Column(nullable = false)
+    private boolean status = true;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Invoice> invoices;

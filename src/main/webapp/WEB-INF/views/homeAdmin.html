@@ -117,7 +117,7 @@
         <!-- Main Content -->
         <div class="col-md-9 col-lg-10 main-content">
             <div class="content-area" id="main-content-area">
-                <div th:if="${view}" th:replace="~{${view} :: content}"></div>
+                <div th:replace="${content}"></div>
             </div>
         </div>
     </div>
