@@ -17,7 +17,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "product_name", nullable = false, length = 100)
     private String name;
@@ -26,16 +26,16 @@ public class Product {
     private String brand;
 
     @Column(name = "product_price", nullable = false)
-    private double price;
+    private Double price;
 
     @Column(name = "product_stock", nullable = false)
-    private int stock;
+    private Integer stock;
 
     @Column(name = "product_image", nullable = false)
     private String image;
 
     @Column(name = "product_status", nullable = false)
-    private boolean status = true;
+    private Boolean status = true;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceDetail> invoiceDetails = new ArrayList<>();

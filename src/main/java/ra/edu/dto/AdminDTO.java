@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 public class AdminDTO {
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Tên đăng nhập không được để trống")
     private String username;

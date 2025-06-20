@@ -37,20 +37,48 @@ public class CustomerController {
 
     @PostMapping("/save")
     public String saveCustomer(@Valid @ModelAttribute("customerDTO") CustomerDTO customerDTO,
-                               BindingResult result, HttpSession session,
-                               RedirectAttributes redirectAttributes) {
+                               BindingResult result,
+                               HttpSession session,
+                               Model model) {
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
 
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("customerDTO", result);
-            redirectAttributes.addFlashAttribute("customerDTO", customerDTO);
-            return "redirect:/admin/customers";
+        Customer customer = convertToEntity(customerDTO);
+
+        // Kiểm tra trùng số điện thoại
+        Customer existingPhone = customerService.findCustomerByPhone(customer.getPhone());
+        if (!result.hasFieldErrors("phone") &&
+                existingPhone != null &&
+                (customer.getId() == null || !existingPhone.getId().equals(customer.getId()))) {
+            result.rejectValue("phone", "error.phone", "Số điện thoại đã tồn tại");
         }
 
-        Customer customer = convertToEntity(customerDTO);
-        customerService.saveCustomer(customer);
+        // Kiểm tra trùng email
+        Customer existingEmail = customerService.findCustomerByEmail(customer.getEmail());
+        if (!result.hasFieldErrors("email") &&
+                existingEmail != null &&
+                (customer.getId() == null || !existingEmail.getId().equals(customer.getId()))) {
+            result.rejectValue("email", "error.email", "Email đã tồn tại");
+        }
+
+        if (result.hasErrors()) {
+            model.addAttribute("customers", customerService.findAllCustomer());
+            model.addAttribute("content", "customers");
+            model.addAttribute("showModal", true);
+            if (customerDTO.getId() != null) {
+                model.addAttribute("editMode", true);
+            }
+            return "homeAdmin";
+        }
+
+        boolean success;
+        if (customer.getId() != null) {
+            success = customerService.updateCustomer(customer);
+        } else {
+            success = customerService.saveCustomer(customer);
+        }
+
         return "redirect:/admin/customers";
     }
 
@@ -86,6 +114,36 @@ public class CustomerController {
         return "redirect:/admin/customers";
     }
 
+    @PostMapping("/update-status")
+    public String updateStatus(@RequestParam("id") Integer id,
+                               @RequestParam("status") boolean status) {
+        customerService.updateCustomerStatus(id, status);
+        return "redirect:/admin/customers";
+    }
+
+    @PostMapping("/searchCustomer")
+    public String searchCustomerByName(@RequestParam(required = false) String customerName,
+                                       Model model,
+                                       HttpSession session) {
+        if (session.getAttribute("adminLogin") == null) {
+            return "redirect:/login";
+        }
+
+        List<Customer> customers;
+        if (customerName == null || customerName.trim().isEmpty()) {
+            customers = customerService.findAllCustomer(); // Nếu ô tìm kiếm rỗng
+        } else {
+            customers = customerService.findCustomerByName(customerName.trim());
+        }
+
+        model.addAttribute("customers", customers);
+        model.addAttribute("customerDTO", new CustomerDTO());
+        model.addAttribute("content", "customers");
+        model.addAttribute("keywordName", customerName);
+
+        return "homeAdmin";
+    }
+
     // ======= CHUYỂN ĐỔI =========
     private CustomerDTO convertToDTO(Customer c) {
         CustomerDTO dto = new CustomerDTO();
@@ -94,7 +152,7 @@ public class CustomerController {
         dto.setEmail(c.getEmail());
         dto.setPhone(c.getPhone());
         dto.setAddress(c.getAddress());
-        dto.setStatus(c.isStatus());
+        dto.setStatus(c.getStatus());
         return dto;
     }
 
@@ -105,7 +163,7 @@ public class CustomerController {
         c.setEmail(dto.getEmail());
         c.setPhone(dto.getPhone());
         c.setAddress(dto.getAddress());
-        c.setStatus(dto.isStatus()); // mặc định true nếu null
+        c.setStatus(dto.getStatus()); // mặc định true nếu null
         return c;
     }
 }

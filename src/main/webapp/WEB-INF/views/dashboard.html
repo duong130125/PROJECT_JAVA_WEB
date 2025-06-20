@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
 <div th:fragment="content">
     <style>
         body {
@@ -111,11 +103,6 @@
             color: #212529;
         }
 
-        .btn-refresh {
-            background-color: #17a2b8;
-            color: white;
-        }
-
         .section-title {
             font-size: 1.3rem;
             font-weight: 600;
@@ -131,10 +118,7 @@
         }
 
         .dashboard-header {
-            background: white;
             padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
 
@@ -154,7 +138,7 @@
             }
         }
     </style>
-    <div class="container-fluid px-3 py-2">
+    <div class="container-fluid">
         <!-- Dashboard Header -->
         <div class="dashboard-header">
             <div class="d-flex align-items-center">
@@ -170,11 +154,11 @@
                 <div class="card dashboard-card blue-border">
                     <div class="card-body text-center py-3">
                         <i class="fas fa-users icon-large" style="color: #007bff;"></i>
-                        <h2 class="card-number" style="color: #007bff;" th:text="${totalUsers ?: 0}">0</h2>
+                        <h2 class="card-number" style="color: #007bff;" th:text="${totalCustomers ?: 0}">0</h2>
                         <p class="card-title mb-1">TỔNG CUSTOMER</p>
                         <p class="card-subtitle mb-0" style="color: #28a745;">
                             <i class="fas fa-user-check"></i>
-                            <span th:text="${activeUsers ?: 0}">0</span> hoạt động
+                            <span th:text="${activeCustomers ?: 0}">0</span> hoạt động
                         </p>
                     </div>
                 </div>
@@ -210,8 +194,11 @@
             <div class="col-xl-3 col-lg-6 col-md-6">
                 <div class="card dashboard-card red-border">
                     <div class="card-body text-center py-3">
-                        <i class="fas fa-dollar-sign icon-large" style="color: #dc3545;"></i>
-                        <h2 class="card-number" style="color: #dc3545;" th:text="${totalRevenue ?: '$0.00'}">$0.00</h2>
+                        <i class="fas fa-coins icon-large" style="color: #dc3534;"></i> <!-- tiền xu -->
+                        <h2 class="card-number" style="color: #dc3545;"
+                            th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                            0 ₫
+                        </h2>
                         <p class="card-title mb-0">TỔNG DOANH THU</p>
                     </div>
                 </div>
@@ -227,7 +214,10 @@
                             <i class="fas fa-chart-line"></i>
                             Doanh Thu Tháng
                         </h5>
-                        <h2 class="revenue-amount mb-2" th:text="${monthlyRevenue ?: '$0.00'}">$0.00</h2>
+                        <h2 class="revenue-amount mb-2"
+                            th:text="${#numbers.formatDecimal(monthlyRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                            0 ₫
+                        </h2>
                         <p class="mb-0 small">Tháng hiện tại</p>
                     </div>
                 </div>
@@ -239,7 +229,10 @@
                             <i class="fas fa-chart-area"></i>
                             Doanh Thu Năm
                         </h5>
-                        <h2 class="revenue-amount mb-2" th:text="${yearlyRevenue ?: '$0.00'}">$0.00</h2>
+                        <h2 class="revenue-amount mb-2"
+                            th:text="${#numbers.formatDecimal(yearlyRevenue, 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                            0 ₫
+                        </h2>
                         <p class="mb-0 small">Năm hiện tại</p>
                     </div>
                 </div>
@@ -270,5 +263,3 @@
         </div>
     </div>
 </div>
-</body>
-</html>

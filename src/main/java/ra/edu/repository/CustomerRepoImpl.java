@@ -114,4 +114,57 @@ public class CustomerRepoImpl implements CustomerRepo {
             session.close();
         }
     }
+
+    @Override
+    public Customer findCustomerByPhone(String phone) {
+        Session session = sessionFactory.openSession();
+        try {
+            String hql = "FROM Customer WHERE phone = :phone";
+            Query<Customer> query = session.createQuery(hql, Customer.class);
+            query.setParameter("phone", phone);
+            return query.uniqueResult(); // hoặc .getSingleResult() nếu chắc chắn có 1
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public Customer findCustomerByEmail(String email) {
+        Session session = sessionFactory.openSession();
+        try {
+            String hql = "FROM Customer WHERE email = :email";
+            return session.createQuery(hql, Customer.class)
+                    .setParameter("email", email)
+                    .uniqueResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public boolean updateCustomerStatus(Integer id, boolean status) {
+        Session session = sessionFactory.openSession();
+        try {
+            Customer customer = findCustomerById(id);
+            if (customer != null) {
+                session.beginTransaction();
+                customer.setStatus(status);
+                session.update(customer);
+                session.getTransaction().commit();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            session.close();
+        }
+    }
 }

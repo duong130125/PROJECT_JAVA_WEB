@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ra.edu.entity.Invoice;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,4 +116,43 @@ public class InvoiceRepoImpl implements InvoiceRepo {
         }
     }
 
+    @Override
+    public BigDecimal getTotalRevenueByDay() {
+        Session session = sessionFactory.openSession();
+        try {
+            String hql = "SELECT COALESCE(SUM(i.total_amount), 0) FROM Invoice i " +
+                    "WHERE DATE(i.created_at) = CURRENT_DATE AND i.status = 'COMPLETED'";
+            Double result = session.createQuery(hql, Double.class).uniqueResult();
+            return BigDecimal.valueOf(result != null ? result : 0.0);
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public BigDecimal getTotalRevenueByMonth() {
+        Session session = sessionFactory.openSession();
+        try {
+            String hql = "SELECT COALESCE(SUM(i.total_amount), 0) FROM Invoice i " +
+                    "WHERE MONTH(i.created_at) = MONTH(CURRENT_DATE) " +
+                    "AND YEAR(i.created_at) = YEAR(CURRENT_DATE) AND i.status = 'COMPLETED'";
+            Double result = session.createQuery(hql, Double.class).uniqueResult();
+            return BigDecimal.valueOf(result != null ? result : 0.0);
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public BigDecimal getTotalRevenueByYear() {
+        Session session = sessionFactory.openSession();
+        try {
+            String hql = "SELECT COALESCE(SUM(i.total_amount), 0) FROM Invoice i " +
+                    "WHERE YEAR(i.created_at) = YEAR(CURRENT_DATE) AND i.status = 'COMPLETED'";
+            Double result = session.createQuery(hql, Double.class).uniqueResult();
+            return BigDecimal.valueOf(result != null ? result : 0.0);
+        } finally {
+            session.close();
+        }
+    }
 }

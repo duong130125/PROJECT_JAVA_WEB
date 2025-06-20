@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ra.edu.entity.Invoice;
 import ra.edu.repository.InvoiceRepo;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -41,5 +42,20 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public List<Invoice> findInvoiceByCustomerName(String name) {
         return invoiceRepo.findInvoiceByCustomerName(name);
+    }
+
+    @Override
+    public BigDecimal getTotalRevenueByDay() {
+        return invoiceRepo.getTotalRevenueByDay();
+    }
+
+    @Override
+    public BigDecimal getTotalRevenueByMonth() {
+        return invoiceRepo.getTotalRevenueByMonth();
+    }
+
+    @Override
+    public BigDecimal getTotalRevenueByYear() {
+        return invoiceRepo.getTotalRevenueByYear();
     }
 }

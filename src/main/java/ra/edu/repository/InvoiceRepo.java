@@ -2,6 +2,7 @@ package ra.edu.repository;
 
 import ra.edu.entity.Invoice;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface InvoiceRepo {
@@ -11,4 +12,8 @@ public interface InvoiceRepo {
     boolean deleteInvoice(Integer id);
     boolean updateInvoice(Invoice invoice);
     List<Invoice> findInvoiceByCustomerName(String name);
+    BigDecimal getTotalRevenueByDay();
+    BigDecimal getTotalRevenueByMonth();
+    BigDecimal getTotalRevenueByYear();
+
 }

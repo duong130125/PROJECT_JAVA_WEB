@@ -11,4 +11,7 @@ public interface CustomerService {
     boolean deleteCustomer(Integer id);
     boolean updateCustomer(Customer customer);
     List<Customer> findCustomerByName(String name);
+    Customer findCustomerByPhone(String phone);
+    Customer findCustomerByEmail(String email);
+    boolean updateCustomerStatus(Integer id, boolean status);
 }

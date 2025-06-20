@@ -7,16 +7,11 @@ import javax.validation.constraints.Pattern;
 
 @Data
 public class CustomerDTO {
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "Tên khách hàng không được để trống")
     private String name;
 
-    @NotBlank(message = "Email không được để trống")
-    @Pattern(
-            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$",
-            message = "Email không đúng định dạng"
-    )
     private String email;
 
     @NotBlank(message = "Số điện thoại không được để trống")
@@ -29,5 +24,5 @@ public class CustomerDTO {
     @NotBlank(message = "Địa chỉ không được để trống")
     private String address;
 
-    private boolean status = true;
+    private Boolean status = true;
 }

@@ -16,12 +16,12 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(unique = true, length = 100)
     private String email;
 
     @Column(nullable = false, unique = true, length = 20)
@@ -31,7 +31,7 @@ public class Customer {
     private String address;
 
     @Column(nullable = false)
-    private boolean status = true;
+    private Boolean status = true;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Invoice> invoices;

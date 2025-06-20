@@ -42,4 +42,19 @@ public class CustomerServiceImpl implements CustomerService{
     public List<Customer> findCustomerByName(String name) {
         return customerRepo.findCustomerByName(name);
     }
+
+    @Override
+    public Customer findCustomerByPhone(String phone) {
+        return customerRepo.findCustomerByPhone(phone);
+    }
+
+    @Override
+    public Customer findCustomerByEmail(String email) {
+        return customerRepo.findCustomerByEmail(email);
+    }
+
+    @Override
+    public boolean updateCustomerStatus(Integer id, boolean status) {
+        return customerRepo.updateCustomerStatus(id, status);
+    }
 }

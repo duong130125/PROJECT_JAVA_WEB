@@ -19,13 +19,13 @@ public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     private Date created_at;
 
     @Column(nullable = false)
-    private double total_amount;
+    private Double total_amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

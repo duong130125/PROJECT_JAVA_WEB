@@ -1,0 +1,275 @@
+<div th:fragment="invoice-modal">
+    <!-- Modal -->
+    <div class="modal fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="invoiceModalLabel">FORM INVOICE</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="invoiceForm">
+                        <!-- Customer Section -->
+                        <div class="customer-section">
+                            <label for="customer">Customer <span class="text-danger">*</span></label>
+                            <select id="customer" class="customer-select form-control">
+                                <option value="">Select Customer</option>
+                                <option value="customer1" selected>Michael Ballack</option>
+                                <option value="customer2">Customer 1</option>
+                                <option value="customer3">Customer 2</option>
+                            </select>
+                        </div>
+
+                        <!-- Invoice Detail Section -->
+                        <div class="invoice-detail">
+                            <h5 class="detail-title">INVOICE DETAIL</h5>
+
+                            <div class="table-container">
+                                <table id="invoiceTable" class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="stt">STT</th>
+                                        <th class="product-name">Product Name</th>
+                                        <th class="brand">Brand</th>
+                                        <th class="quantity">Quantity</th>
+                                        <th class="price">Price</th>
+                                        <th class="total">Total Amount</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td class="stt">1</td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" value="Shoe"
+                                                   name="product_name">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control form-control-sm" value="Balenciaga"
+                                                   name="brand">
+                                        </td>
+                                        <td>
+                                            <div class="quantity-controls">
+                                                <button type="button" class="qty-btn" onclick="decreaseQty(this)">-
+                                                </button>
+                                                <input type="number" value="2" class="qty-input"
+                                                       onchange="updateTotal(this)" min="1">
+                                                <button type="button" class="qty-btn" onclick="increaseQty(this)">+
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td class="form-control form-control-sm price-input">
+                                            1200 $
+                                        </td>
+                                        <td class="total">2,400 $</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="total-summary">
+                                <h5>Total Amount: <span class="total-amount" id="grandTotal">2,400 $</span></h5>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveInvoice()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            /*padding: 20px;*/
+        }
+
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .customer-section {
+            margin-bottom: 15px;
+        }
+
+        .customer-section label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .customer-select {
+            width: 100%;
+            max-width: 300px;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        .invoice-detail {
+            background: #f1f1ec;
+            padding: 15px 20px;
+        }
+
+        .detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .table {
+            margin-bottom: 0;
+            font-size: 12px;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            padding: 8px 6px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 1px solid #e5e5e5;
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 12px;
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .stt {
+            width: 40px;
+            text-align: center;
+        }
+
+        .product-name {
+            min-width: 100px;
+        }
+
+        .brand {
+            min-width: 80px;
+        }
+
+        .quantity {
+            width: 100px;
+            text-align: center;
+        }
+
+        .price {
+            width: 80px;
+        }
+
+        .total {
+            width: 80px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .qty-btn {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .qty-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .qty-input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 2px;
+            font-size: 12px;
+        }
+
+        .price-input {
+            text-align: center;
+        }
+
+        .total-summary {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: right;
+            border: 1px solid #e5e5e5;
+            margin-top: 15px;
+        }
+
+        .total-summary h5 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .total-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ff6b35;
+        }
+
+        .btn-primary {
+            background-color: #ff6b35;
+            border-color: #ff6b35;
+        }
+
+        .btn-primary:hover {
+            background-color: #e55a2b;
+            border-color: #e55a2b;
+        }
+
+        .form-control-sm {
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-size: 11px;
+        }
+
+        .form-control-sm:focus {
+            border: 1px solid #ff6b35;
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+            background: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</div>

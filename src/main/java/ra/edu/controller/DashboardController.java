@@ -1,25 +1,62 @@
 package ra.edu.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ra.edu.entity.Customer;
+import ra.edu.entity.Invoice;
+import ra.edu.entity.Product;
+import ra.edu.service.CustomerService;
+import ra.edu.service.InvoiceService;
+import ra.edu.service.ProductService;
+import ra.edu.utils.InvoiceStatus;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/dashboard")
 public class DashboardController {
 
+    @Autowired
+    private InvoiceService invoiceService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private CustomerService customerService;
+
     @GetMapping
     public String showDashboard(Model model, HttpSession session) {
-        // Thêm dữ liệu mẫu (hoặc lấy từ service)
-        model.addAttribute("totalUsers", 100);
-        model.addAttribute("activeUsers", 85);
-        model.addAttribute("totalProducts", 250);
-        model.addAttribute("totalOrders", 120);
-        model.addAttribute("pendingOrders", 20);
-        model.addAttribute("totalRevenue", "12,345.67");
+        List<Customer> customers = customerService.findAllCustomer();
+
+        // Tổng số customer
+        model.addAttribute("totalCustomers", customers.size());
+
+        // Số customer đang hoạt động (giả sử có trường isActive hoặc status)
+        long activeCount = customers.stream()
+                .filter(customer -> customer.getStatus() == true)
+                .count();
+        model.addAttribute("activeCustomers", activeCount);
+
+        List<Product> products = productService.getAllProducts();
+        model.addAttribute("totalProducts", products.size());
+
+        List<Invoice> allInvoices = invoiceService.findAllInvoice();
+        model.addAttribute("totalOrders", allInvoices.size());
+
+        long pendingOrders = allInvoices.stream()
+                .filter(i -> i.getStatus() == InvoiceStatus.PENDING)
+                .count();
+
+        model.addAttribute("pendingOrders", pendingOrders);
+
+        model.addAttribute("totalRevenue", invoiceService.getTotalRevenueByDay());
+        model.addAttribute("monthlyRevenue", invoiceService.getTotalRevenueByMonth());
+        model.addAttribute("yearlyRevenue", invoiceService.getTotalRevenueByYear());
 
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
