@@ -45,7 +45,7 @@ public class DashboardController {
                 .count();
         model.addAttribute("activeCustomers", activeCount);
 
-        List<Product> products = productService.getAllProducts();
+        List<Product> products = productService.getAllProducts(page, size);
         model.addAttribute("totalProducts", products.size());
 
         List<Invoice> allInvoices = invoiceService.findAllInvoice();

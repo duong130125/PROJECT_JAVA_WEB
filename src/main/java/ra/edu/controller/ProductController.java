@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ra.edu.dto.ProductDTO;
+import ra.edu.entity.Customer;
 import ra.edu.entity.Product;
 import ra.edu.service.ProductService;
 
@@ -30,22 +31,34 @@ public class ProductController {
     @Autowired
     private Cloudinary cloudinary;
 
-    // Hiển thị danh sách sản phẩm
     @GetMapping
-    public String listProducts(Model model, HttpSession session) {
+    public String listProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model, HttpSession session) {
+
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
 
-        List<Product> products = productService.getAllProducts();
+        List<Product> products = productService.getAllProducts(page, size);
+        long total = productService.countAllProducts();
+        int totalPages = (int) Math.ceil((double) total / size);
+
         model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("size", size);
         model.addAttribute("productDTO", new ProductDTO());
         model.addAttribute("content", "products");
+
         return "homeAdmin";
     }
 
     @PostMapping("/save")
-    public String saveProduct(@Valid @ModelAttribute("productDTO") ProductDTO productDTO,
+    public String saveProduct(@RequestParam(defaultValue = "0") int page,
+                              @RequestParam(defaultValue = "5") int size,
+                              @Valid @ModelAttribute("productDTO") ProductDTO productDTO,
                               BindingResult result,
                               @RequestParam("imageFile") MultipartFile imageFile,
                               HttpSession session,
@@ -80,7 +93,7 @@ public class ProductController {
 
         // Nếu có lỗi thì trả về lại trang
         if (result.hasErrors()) {
-            model.addAttribute("products", productService.getAllProducts());
+            prepareProductList(model, page, size);
             model.addAttribute("content", "products");
             model.addAttribute("productDTO", productDTO);
             model.addAttribute("showModal", true);
@@ -113,7 +126,7 @@ public class ProductController {
                 product.setImage(imageUrl);
             } catch (Exception e) {
                 result.rejectValue("image", "error.image", "Lỗi khi upload ảnh: " + e.getMessage());
-                model.addAttribute("products", productService.getAllProducts());
+                prepareProductList(model, page, size);
                 model.addAttribute("content", "products");
                 model.addAttribute("showModal", true);
                 if (isEdit) model.addAttribute("editMode", true);
@@ -174,9 +187,10 @@ public class ProductController {
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String priceRange,
             @RequestParam(required = false) String stock,
-            Model model,
-            HttpSession session
-    ) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model, HttpSession session) {
+
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
@@ -197,42 +211,46 @@ public class ProductController {
                             minPrice = null;
                             maxPrice = null;
                         }
-                    } catch (NumberFormatException ignored) {
-                    }
+                    } catch (NumberFormatException ignored) {}
                 }
                 model.addAttribute("searchPriceRange", priceRange);
             }
 
-            // Xử lý tồn kho
+            // Tồn kho
             if (stock != null && !stock.isEmpty()) {
                 try {
                     stockInt = Integer.parseInt(stock);
                     model.addAttribute("searchStock", stock);
-                } catch (NumberFormatException ignored) {
-                }
+                } catch (NumberFormatException ignored) {}
             }
 
-            // Xử lý thương hiệu
+            // Thương hiệu
             if (brand != null && !brand.trim().isEmpty()) {
                 model.addAttribute("searchBrand", brand.trim());
             }
 
-            // Tìm kiếm sản phẩm
-            List<Product> results = productService.searchProducts(brand, minPrice, maxPrice, stockInt);
+            // Danh sách & đếm
+            List<Product> results = productService.searchProducts(brand, minPrice, maxPrice, stockInt, page, size);
+            long total = productService.countSearchedProducts(brand, minPrice, maxPrice, stockInt);
+            int totalPages = (int) Math.ceil((double) total / size);
 
             if (results.isEmpty()) {
                 model.addAttribute("infoMessage", "Không tìm thấy sản phẩm phù hợp với tiêu chí tìm kiếm.");
             }
 
+            model.addAttribute("isSearch", true);
+            model.addAttribute("products", results);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("size", size);
             model.addAttribute("content", "products");
             model.addAttribute("productDTO", new ProductDTO());
-            model.addAttribute("products", results);
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi tìm kiếm: " + e.getMessage());
+            model.addAttribute("products", new ArrayList<>());
             model.addAttribute("content", "products");
             model.addAttribute("productDTO", new ProductDTO());
-            model.addAttribute("products", new ArrayList<>());
         }
 
         return "homeAdmin";
@@ -259,5 +277,16 @@ public class ProductController {
         } catch (Exception e) {
             throw new IOException("Lỗi khi upload ảnh lên Cloudinary: " + e.getMessage());
         }
+    }
+
+    private void prepareProductList(Model model, Integer page, Integer size) {
+        List<Product> products = productService.getAllProducts(page, size);
+        long totalItems = productService.countAllProducts();
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
+        model.addAttribute("totalPages", totalPages);
     }
 }

@@ -19,11 +19,12 @@ public class ProductRepoImpl implements ProductRepo {
     private SessionFactory sessionFactory;
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<Product> getAllProducts(int page, int size) {
         Session session = sessionFactory.openSession();
         try {
-            String hql = "FROM Product";
-            Query<Product> query = session.createQuery(hql, Product.class);
+            Query<Product> query = session.createQuery("FROM Product", Product.class);
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,7 +124,7 @@ public class ProductRepoImpl implements ProductRepo {
     }
 
     @Override
-    public List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock) {
+    public List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock, int page, int size) {
         Session session = sessionFactory.openSession();
         try {
             StringBuilder hql = new StringBuilder("FROM Product p WHERE 1=1");
@@ -151,6 +152,10 @@ public class ProductRepoImpl implements ProductRepo {
                 query.setParameter("stock", stock);
             }
 
+            // ✅ Phân trang ở đây
+            query.setFirstResult(page * size); // vị trí bắt đầu
+            query.setMaxResults(size);         // số bản ghi mỗi trang
+
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,6 +181,51 @@ public class ProductRepoImpl implements ProductRepo {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public long countAllProducts() {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.createQuery("SELECT COUNT(*) FROM Product", Long.class).getSingleResult();
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public long countSearchedProducts(String brand, Double minPrice, Double maxPrice, Integer stock) {
+        Session session = sessionFactory.openSession();
+        try {
+            StringBuilder hql = new StringBuilder("SELECT COUNT(*) FROM Product p WHERE 1=1");
+
+            if (brand != null && !brand.trim().isEmpty()) {
+                hql.append(" AND lower(p.brand) LIKE :brand");
+            }
+            if (minPrice != null && maxPrice != null && minPrice <= maxPrice) {
+                hql.append(" AND p.price BETWEEN :minPrice AND :maxPrice");
+            }
+            if (stock != null && stock > 0) {
+                hql.append(" AND p.stock >= :stock");
+            }
+
+            Query<Long> query = session.createQuery(hql.toString(), Long.class);
+
+            if (brand != null && !brand.trim().isEmpty()) {
+                query.setParameter("brand", "%" + brand.toLowerCase() + "%");
+            }
+            if (minPrice != null && maxPrice != null && minPrice <= maxPrice) {
+                query.setParameter("minPrice", minPrice);
+                query.setParameter("maxPrice", maxPrice);
+            }
+            if (stock != null && stock > 0) {
+                query.setParameter("stock", stock);
+            }
+
+            return query.getSingleResult();
         } finally {
             session.close();
         }

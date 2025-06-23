@@ -127,10 +127,6 @@
             background-color: #f8f9fa;
         }
 
-        .invoices-action-icons .invoices-delete {
-            color: #dc3545;
-        }
-
         .invoices-action-icons .invoices-edit {
             color: #ffc107;
         }
@@ -142,7 +138,8 @@
         .invoices-pagination-container {
             margin-top: 25px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
+            padding-right: 20px;
         }
 
         .invoices-pagination {
@@ -337,9 +334,6 @@
                     </td>
                     <td>
                         <div class="invoices-action-icons">
-                            <i class="bi bi-trash invoices-delete"
-                               th:attr="onclick=|deleteInvoice(${invoice.id})|"></i>
-                            <!-- Chỉ hiển thị nếu chưa COMPLETED hoặc CANCELLED -->
                             <button type="button"
                                     class="btn btn-sm invoices-edit"
                                     th:if="${invoice.status != 'COMPLETED' and invoice.status != 'CANCELLED'}"

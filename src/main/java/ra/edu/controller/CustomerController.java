@@ -177,6 +177,7 @@ public class CustomerController {
 
         model.addAttribute("customers", customers);
         model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
         model.addAttribute("totalPages", totalPages);
     }
 

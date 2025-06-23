@@ -14,8 +14,8 @@ public class ProductServiceIpml implements ProductService {
     private ProductRepo productRepo;
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepo.getAllProducts();
+    public List<Product> getAllProducts(int page, int size) {
+        return productRepo.getAllProducts(page, size);
     }
 
     @Override
@@ -44,8 +44,18 @@ public class ProductServiceIpml implements ProductService {
     }
 
     @Override
-    public List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock) {
-        return productRepo.searchProducts(brand, minPrice, maxPrice, stock);
+    public List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock, int page, int size) {
+        return productRepo.searchProducts(brand, minPrice, maxPrice, stock, page, size);
+    }
+
+    @Override
+    public long countAllProducts() {
+        return productRepo.countAllProducts();
+    }
+
+    @Override
+    public long countSearchedProducts(String brand, Double minPrice, Double maxPrice, Integer stock) {
+        return productRepo.countSearchedProducts(brand, minPrice, maxPrice, stock);
     }
 
     @Override

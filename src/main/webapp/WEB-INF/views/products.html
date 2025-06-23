@@ -164,7 +164,8 @@
         .products-pagination-container {
             margin-top: 25px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
+            padding-right: 20px;
         }
 
         .products-pagination {
@@ -454,15 +455,49 @@
         <div class="products-pagination-container">
             <nav>
                 <ul class="products-pagination pagination">
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                    <li class="page-item"><a class="page-link" href="#">6</a></li>
-                    <li class="page-item"><a class="page-link" href="#">7</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+
+                    <!-- Nút Previous -->
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${isSearch}"
+                           th:href="@{/admin/products/search(page=${currentPage - 1}, size=${size}, brand=${searchBrand}, priceRange=${searchPriceRange}, stock=${searchStock})}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                        <a class="page-link"
+                           th:unless="${isSearch}"
+                           th:href="@{/admin/products(page=${currentPage - 1}, size=${size})}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+
+                    <!-- Số trang -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:if="${isSearch}"
+                           th:href="@{/admin/products/search(page=${i}, size=${size}, brand=${searchBrand}, priceRange=${searchPriceRange}, stock=${searchStock})}"
+                           th:text="${i + 1}">1</a>
+                        <a class="page-link"
+                           th:unless="${isSearch}"
+                           th:href="@{/admin/products(page=${i}, size=${size})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+
+                    <!-- Nút Next -->
+                    <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:if="${isSearch}"
+                           th:href="@{/admin/products/search(page=${currentPage + 1}, size=${size}, brand=${searchBrand}, priceRange=${searchPriceRange}, stock=${searchStock})}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                        <a class="page-link"
+                           th:unless="${isSearch}"
+                           th:href="@{/admin/products(page=${currentPage + 1}, size=${size})}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+
                 </ul>
             </nav>
         </div>
@@ -618,9 +653,9 @@
 
             // Nút "Edit"
             document.addEventListener('click', function (e) {
-                if (e.target.closest('.edit-btn')) {
+                if (e.target.closest('.customers-btn-edit')) {
                     e.preventDefault();
-                    const btn = e.target.closest('.edit-btn');
+                    const btn = e.target.closest('.customers-btn-edit');
                     const data = {
                         id: btn.getAttribute('data-id'),
                         name: btn.getAttribute('data-name'),
