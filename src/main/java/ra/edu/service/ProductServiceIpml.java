@@ -47,4 +47,9 @@ public class ProductServiceIpml implements ProductService {
     public List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock) {
         return productRepo.searchProducts(brand, minPrice, maxPrice, stock);
     }
+
+    @Override
+    public boolean updateProductsStatus(Integer id, boolean status) {
+        return productRepo.updateProductsStatus(id, status);
+    }
 }

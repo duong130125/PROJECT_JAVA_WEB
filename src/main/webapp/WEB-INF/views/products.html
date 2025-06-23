@@ -242,6 +242,25 @@
             text-align: center;
             border: 1px solid #f1aeb5;
         }
+
+        .customers-btn-action {
+            background: none;
+            border: none;
+            margin: 0 3px;
+            font-size: 16px;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .customers-btn-lock i.text-success {
+            color: #198754 !important;
+        }
+
+        .customers-btn-lock i.text-danger {
+            color: #dc3545;
+        }
     </style>
 
     <div>
@@ -362,6 +381,13 @@
                         </td>
                         <td>
                             <div class="action-buttons">
+                                <button type="button" class="customers-btn-action customers-btn-lock"
+                                        th:title="${product.status ? 'Khóa' : 'Mở khóa'}"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#lockModal' + ${product.id}">
+                                    <i class="fas"
+                                       th:classappend="${product.status} ? ' fa-lock-open text-success' : ' fa-lock text-danger'"></i>
+                                </button>
                                 <button type="button" class="btn btn-warning btn-sm edit-btn" title="Edit"
                                         th:data-id="${product.id}"
                                         th:data-name="${product.name}"
@@ -401,6 +427,38 @@
                                                     <button type="submit" class="btn btn-danger">Xóa</button>
                                                 </form>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal Khóa/Mở khóa -->
+                            <div class="modal fade" th:id="'lockModal' + ${product.id}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" th:text="${product.status ? 'Xác nhận khóa sản phẩm' : 'Xác nhận mở khóa sản phẩm'}"></h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>
+                                                <span th:text="'Bạn có chắc chắn muốn ' + (${product.status} ? 'khóa' : 'mở khóa') + ' sản phẩm '"></span>
+                                                <strong th:text="${product.name}"></strong>
+                                                <span> không?</span>
+                                            </p>
+                                            <p class="text-danger"><small>Thao tác này sẽ ảnh hưởng đến việc mua sắm của khách hàng.</small></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                            <form th:action="@{/admin/products/changeStatus}" method="post">
+                                                <input type="hidden" name="id" th:value="${product.id}" />
+                                                <input type="hidden" name="status" th:value="${!product.status}" />
+                                                <button type="submit"
+                                                        th:classappend="${product.status ? 'btn btn-danger' : 'btn btn-success'}"
+                                                        th:text="${product.status ? 'Khóa' : 'Mở khóa'}">
+                                                    Khóa
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

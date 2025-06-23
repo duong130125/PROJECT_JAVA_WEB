@@ -6,6 +6,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import ra.edu.entity.Customer;
 import ra.edu.entity.Product;
 
 import java.util.ArrayList;
@@ -154,6 +155,27 @@ public class ProductRepoImpl implements ProductRepo {
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public boolean updateProductsStatus(Integer id, boolean status) {
+        Session session = sessionFactory.openSession();
+        try {
+            Product product = findProductById(id);
+            if (product != null) {
+                session.beginTransaction();
+                product.setStatus(status);
+                session.update(product);
+                session.getTransaction().commit();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         } finally {
             session.close();
         }

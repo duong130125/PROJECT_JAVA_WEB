@@ -238,6 +238,12 @@ public class ProductController {
         return "homeAdmin";
     }
 
+    @PostMapping("/changeStatus")
+    public String changeStatus(@RequestParam("id") Integer id,
+                               @RequestParam("status") boolean status) {
+        productService.updateProductsStatus(id, status);
+        return "redirect:/admin/products";
+    }
 
     // Upload ảnh lên Cloudinary
     private String uploadToCloudinary(MultipartFile file) throws IOException {

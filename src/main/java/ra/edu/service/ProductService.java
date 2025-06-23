@@ -12,5 +12,5 @@ public interface ProductService {
     boolean deleteProduct(int id);
     Product findProductByName(String name);
     List<Product> searchProducts(String brand, Double minPrice, Double maxPrice, Integer stock);
-
+    boolean updateProductsStatus(Integer id, boolean status);
 }
