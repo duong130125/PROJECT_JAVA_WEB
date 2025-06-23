@@ -213,6 +213,35 @@
             border-color: #e55a2b;
         }
 
+        .products-status-active {
+            background-color: #d1f2d9;
+            color: #0a3622;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            min-width: 90px;
+            text-align: center;
+            border: 1px solid #a6e9a6;
+        }
+
+        .products-status-deactivate {
+            background-color: #f8d7da;
+            color: #842029;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            min-width: 90px;
+            text-align: center;
+            border: 1px solid #f1aeb5;
+        }
     </style>
 
     <div>
@@ -231,7 +260,7 @@
                 <!-- Add Product Button - Left Side -->
                 <div>
                     <button type="button" class="btn btn-add-product" id="addProductBtn">
-                        <i class="fas fa-plus me-2"></i>Add Product
+                        Add Product
                     </button>
                 </div>
 
@@ -240,7 +269,6 @@
                     <form th:action="@{/admin/products/search}" method="get" class="row g-3 align-items-end">
                         <!-- Thương hiệu -->
                         <div class="col-md-3">
-                            <label for="brand" class="form-label">Thương hiệu</label>
                             <input type="text" class="form-control" id="brand" name="brand"
                                    placeholder="Nhập tên thương hiệu..."
                                    th:value="${param.brand}">
@@ -248,7 +276,6 @@
 
                         <!-- Khoảng giá -->
                         <div class="col-md-3">
-                            <label for="priceRange" class="form-label">Khoảng giá</label>
                             <select class="form-select" id="priceRange" name="priceRange">
                                 <option value="">-- Chọn khoảng giá --</option>
                                 <option value="0-5000000" th:selected="${param.priceRange == '0-5000000'}">Dưới 5
@@ -268,7 +295,6 @@
 
                         <!-- Tồn kho -->
                         <div class="col-md-3">
-                            <label for="stock" class="form-label">Tồn kho lớn hơn</label>
                             <input type="number" class="form-control" id="stock" name="stock" min="0"
                                    placeholder="Số lượng"
                                    th:value="${param.stock}">
@@ -331,10 +357,8 @@
                         </td>
                         <td th:text="${product.stock}">10</td>
                         <td>
-                            <span th:class="${product.status == true ? 'status-badge status-active' : 'status-badge status-deactivate'}"
-                                  th:text="${product.status == true ? 'Active' : 'Deactivate'}">
-                                Active
-                            </span>
+                            <span th:if="${product.status}" class="products-status-active">Active</span>
+                            <span th:unless="${product.status}" class="products-status-deactivate">Deactivate</span>
                         </td>
                         <td>
                             <div class="action-buttons">

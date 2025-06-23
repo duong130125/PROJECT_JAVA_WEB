@@ -225,11 +225,13 @@ public class ProductController {
             }
 
             model.addAttribute("content", "products");
+            model.addAttribute("productDTO", new ProductDTO());
             model.addAttribute("products", results);
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi khi tìm kiếm: " + e.getMessage());
             model.addAttribute("content", "products");
+            model.addAttribute("productDTO", new ProductDTO());
             model.addAttribute("products", new ArrayList<>());
         }
 

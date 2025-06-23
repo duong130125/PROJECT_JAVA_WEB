@@ -4,6 +4,10 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.3) !important;
+        }
+
         .customers-header {
             display: flex;
             align-items: center;
@@ -462,73 +466,73 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        let showModal = /*[[${showModal}]]*/ false;
-        if (showModal) {
-            const modalEl = document.getElementById('customerModal');
-            if (modalEl) {
-                const myModal = new bootstrap.Modal(modalEl);
-                myModal.show();
-            }
-        }
-        /*]]>*/
-
-        // Hàm reset form
-        function resetCustomerForm() {
-            const form = document.getElementById('customerForm');
-            if (!form) return;
-
-            form.reset();
-            form.querySelector('input[name="id"]').value = '';
-
-            // Xóa các class is-invalid và nội dung lỗi nếu có
-            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-            form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
-
-            // Cập nhật tiêu đề và nút
-            const modalTitle = document.querySelector('#customerModal .modal-title');
-            const submitBtn = document.querySelector('#customerModal button[type="submit"]');
-            if (modalTitle) modalTitle.textContent = 'Add Customer';
-            if (submitBtn) submitBtn.textContent = 'Save';
-        }
-
-        // Khi bấm nút "Add Customer"
-        document.getElementById('btnAddCustomer')?.addEventListener('click', function () {
-            resetCustomerForm();
-        });
-
-        // Khi bấm nút "Cancel"
-        document.querySelector('#customerModal .btn-secondary')?.addEventListener('click', function () {
-            resetCustomerForm();
-        });
-
-        // Khi modal bị đóng (click ngoài hoặc nhấn X)
         document.addEventListener('DOMContentLoaded', function () {
             const modalEl = document.getElementById('customerModal');
+            let modalInstance;
+
+            // Nếu modal tồn tại, tạo 1 instance duy nhất
             if (modalEl) {
+                modalInstance = bootstrap.Modal.getInstance(modalEl);
+                if (!modalInstance) {
+                    modalInstance = new bootstrap.Modal(modalEl);
+                }
+
+                // Nếu cần show modal ban đầu
+                let showModal = /*[[${showModal}]]*/ false;
+                if (showModal) {
+                    modalInstance.show();
+                }
+
+                // Reset form khi modal đóng
                 modalEl.addEventListener('hidden.bs.modal', function () {
                     resetCustomerForm();
                 });
             }
 
-            // Xử lý nút Edit
-            const editButtons = document.querySelectorAll('.customers-btn-edit');
-            const modalTitle = modalEl.querySelector('.modal-title');
-            const submitBtn = modalEl.querySelector('button[type="submit"]');
             const form = document.getElementById('customerForm');
+            const nameInput = form?.querySelector('[name="name"]');
+            const emailInput = form?.querySelector('[name="email"]');
+            const phoneInput = form?.querySelector('[name="phone"]');
+            const addressInput = form?.querySelector('[name="address"]');
 
-            const nameInput = form.querySelector('[name="name"]');
-            const emailInput = form.querySelector('[name="email"]');
-            const phoneInput = form.querySelector('[name="phone"]');
-            const addressInput = form.querySelector('[name="address"]');
-
-            let idHiddenInput = form.querySelector('input[name="id"]');
-            if (!idHiddenInput) {
+            let idHiddenInput = form?.querySelector('input[name="id"]');
+            if (form && !idHiddenInput) {
                 idHiddenInput = document.createElement('input');
                 idHiddenInput.type = 'hidden';
                 idHiddenInput.name = 'id';
                 form.appendChild(idHiddenInput);
             }
 
+            // Reset form function
+            function resetCustomerForm() {
+                if (!form) return;
+                form.reset();
+                if (idHiddenInput) idHiddenInput.value = '';
+
+                // Remove validation errors
+                form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                form.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+
+                // Reset title/button
+                const modalTitle = document.querySelector('#customerModal .modal-title');
+                const submitBtn = document.querySelector('#customerModal button[type="submit"]');
+                if (modalTitle) modalTitle.textContent = 'Add Customer';
+                if (submitBtn) submitBtn.textContent = 'Save';
+            }
+
+            // Add Customer button
+            document.getElementById('btnAddCustomer')?.addEventListener('click', function () {
+                resetCustomerForm();
+                modalInstance?.show();
+            });
+
+            // Cancel button
+            document.querySelector('#customerModal .btn-secondary')?.addEventListener('click', function () {
+                resetCustomerForm();
+            });
+
+            // Edit buttons
+            const editButtons = document.querySelectorAll('.customers-btn-edit');
             editButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const id = this.getAttribute('data-id');
@@ -537,19 +541,21 @@
                     const phone = this.getAttribute('data-phone');
                     const address = this.getAttribute('data-address');
 
-                    nameInput.value = name;
-                    emailInput.value = email;
-                    phoneInput.value = phone;
-                    addressInput.value = address;
-                    idHiddenInput.value = id;
+                    if (nameInput) nameInput.value = name;
+                    if (emailInput) emailInput.value = email;
+                    if (phoneInput) phoneInput.value = phone;
+                    if (addressInput) addressInput.value = address;
+                    if (idHiddenInput) idHiddenInput.value = id;
 
-                    modalTitle.textContent = 'Update Customer';
-                    submitBtn.textContent = 'Update';
+                    const modalTitle = document.querySelector('#customerModal .modal-title');
+                    const submitBtn = document.querySelector('#customerModal button[type="submit"]');
+                    if (modalTitle) modalTitle.textContent = 'Update Customer';
+                    if (submitBtn) submitBtn.textContent = 'Update';
 
-                    const modal = new bootstrap.Modal(modalEl);
-                    modal.show();
+                    modalInstance?.show();
                 });
             });
         });
+        /*]]>*/
     </script>
 </div>
