@@ -261,6 +261,10 @@
         .customers-btn-lock i.text-danger {
             color: #dc3545;
         }
+
+        .customers-btn-edit i {
+            color: #ffc107;
+        }
     </style>
 
     <div>
@@ -330,18 +334,18 @@
             </div>
         </div>
 
-        <!-- Success/Error Messages -->
-        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <span th:text="${successMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+<!--        &lt;!&ndash; Success/Error Messages &ndash;&gt;-->
+<!--        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">-->
+<!--            <i class="fas fa-check-circle me-2"></i>-->
+<!--            <span th:text="${successMessage}"></span>-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>-->
+<!--        </div>-->
 
-        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <span th:text="${errorMessage}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+<!--        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">-->
+<!--            <i class="fas fa-exclamation-circle me-2"></i>-->
+<!--            <span th:text="${errorMessage}"></span>-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>-->
+<!--        </div>-->
 
         <!-- Products Table -->
         <div class="products-table">
@@ -388,7 +392,7 @@
                                     <i class="fas"
                                        th:classappend="${product.status} ? ' fa-lock-open text-success' : ' fa-lock text-danger'"></i>
                                 </button>
-                                <button type="button" class="btn btn-warning btn-sm edit-btn" title="Edit"
+                                <button type="button" class="customers-btn-action customers-btn-edit" title="Edit"
                                         th:data-id="${product.id}"
                                         th:data-name="${product.name}"
                                         th:data-brand="${product.brand}"
@@ -398,38 +402,6 @@
                                         th:data-status="${product.status}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                                <button type="button" class="btn btn-danger btn-sm"
-                                        title="Xóa" data-bs-toggle="modal"
-                                        th:data-bs-target="'#deleteModal' + ${product.id}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                                <div class="modal fade" th:id="'deleteModal' + ${product.id}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Xác nhận xóa</h5>
-                                                <button type="button" class="btn-close"
-                                                        data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Bạn có chắc chắn muốn xóa sản phẩm <strong
-                                                        th:text="${product.name}"></strong> không?</p>
-                                                <p class="text-danger"><small>Hành động này không thể hoàn tác!</small>
-                                                </p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                    Hủy
-                                                </button>
-                                                <form th:action="@{/admin/products/delete/{id}(id=${product.id})}"
-                                                      method="post"
-                                                      style="display: inline;">
-                                                    <button type="submit" class="btn btn-danger">Xóa</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             <!-- Modal Khóa/Mở khóa -->

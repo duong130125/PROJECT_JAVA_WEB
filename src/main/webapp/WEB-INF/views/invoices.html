@@ -215,6 +215,62 @@
             outline: none;
             box-shadow: none;
         }
+
+        /* Base badge styling */
+        .badge-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        /* PENDING - Orange */
+        .badge-pending {
+            background-color: #FFF3E0;
+            color: #E65100;
+            border: 1px solid #FFB74D;
+        }
+
+        /* CONFIRMED - Purple */
+        .badge-confirming {
+            background-color: #F3E5F5;
+            color: #7B1FA2;
+            border: 1px solid #BA68C8;
+        }
+
+        /* SHIPPING - Light Blue */
+        .badge-shipping {
+            background-color: #E1F5FE;
+            color: #0277BD;
+            border: 1px solid #4FC3F7;
+        }
+
+        /* COMPLETED - Green */
+        .badge-completed {
+            background-color: #E8F5E8;
+            color: #2E7D32;
+            border: 1px solid #66BB6A;
+        }
+
+        /* CANCELLED - Red */
+        .badge-canceled {
+            background-color: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #EF5350;
+        }
+
+        /* Unknown status - Gray */
+        .bg-secondary {
+            background-color: #F5F5F5 !important;
+            color: #666666 !important;
+            border: 1px solid #CCCCCC;
+        }
     </style>
 
     <div class="invoices-content">
@@ -250,8 +306,8 @@
                     <th style="width: 60px;">STT</th>
                     <th style="width: 200px;">Customer Name</th>
                     <th style="width: 150px;">Created At</th>
+                    <th style="width: 150px; text-align: center;">Total Amount</th>
                     <th style="width: 150px; text-align: center;">Status</th>
-                    <th style="width: 150px; text-align: right;">Total Amount</th>
                     <th style="width: 120px; text-align: center;">Actions</th>
                 </tr>
                 </thead>
@@ -265,43 +321,19 @@
                     <td th:text="${invoice.created_at != null ? #dates.format(invoice.created_at, 'dd/MM/yyyy') : 'N/A'}">
                         20/10/2022
                     </td>
-                    <td style="text-align: center;">
-                        <th:block th:switch="${invoice.status}">
-                            <th:block th:case="'PENDING'"
-                                      th:with="style='padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; display:inline-block; min-width:90px; text-align:center; background:#fff3cd; color:#856404; border:1px solid #ffeaa7;'">
-                                <span th:style="${style}">PENDING</span>
-                            </th:block>
-
-                            <th:block th:case="'CONFIRMED'"
-                                      th:with="style='padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; display:inline-block; min-width:90px; text-align:center; background:#e7d4ff; color:#6f42c1; border:1px solid #d1a7ff;'">
-                                <span th:style="${style}">CONFIRMED</span>
-                            </th:block>
-
-                            <th:block th:case="'SHIPPING'"
-                                      th:with="style='padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; display:inline-block; min-width:90px; text-align:center; background:#cff4fc; color:#0c5460; border:1px solid #9eeaf9;'">
-                                <span th:style="${style}">SHIPPING</span>
-                            </th:block>
-
-                            <th:block th:case="'COMPLETED'"
-                                      th:with="style='padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; display:inline-block; min-width:90px; text-align:center; background:#d1f2d9; color:#0a3622; border:1px solid #a6e9a6;'">
-                                <span th:style="${style}">COMPLETED</span>
-                            </th:block>
-
-                            <th:block th:case="'CANCELLED'"
-                                      th:with="style='padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; display:inline-block; min-width:90px; text-align:center; background:#f8d7da; color:#842029; border:1px solid #f1aeb5;'">
-                                <span th:style="${style}">CANCELLED</span>
-                            </th:block>
-
-                            <th:block th:case="*"
-                                      th:with="style='padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; display:inline-block; min-width:90px; text-align:center; background:#dee2e6; color:#6c757d; border:1px solid #ced4da;'">
-                                <span th:style="${style}" th:text="${invoice.status}">UNKNOWN</span>
-                            </th:block>
-                        </th:block>
-
-                    </td>
-                    <td class="text-end invoices-text-amount"
+                    <td class="text-center invoices-text-amount"
                         th:text="${invoice.total_amount != null ? #numbers.formatDecimal(invoice.total_amount, 1, 'COMMA', 0, 'POINT') + ' VNĐ' : '0 VNĐ'}">
                         0 VNĐ
+                    </td>
+                    <td class="text-center">
+                        <th:block th:switch="${invoice.status.name()}">
+                            <span th:case="'PENDING'" class="badge-status badge-pending">PENDING</span>
+                            <span th:case="'CONFIRMED'" class="badge-status badge-confirming">CONFIRMED</span>
+                            <span th:case="'SHIPPING'" class="badge-status badge-shipping">SHIPPING</span>
+                            <span th:case="'COMPLETED'" class="badge-status badge-completed">COMPLETED</span>
+                            <span th:case="'CANCELLED'" class="badge-status badge-canceled">CANCELLED</span>
+                            <span th:case="*" class="badge-status bg-secondary text-white">UNKNOWN</span>
+                        </th:block>
                     </td>
                     <td>
                         <div class="invoices-action-icons">
@@ -372,8 +404,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Update</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
                     </div>
                 </form>
             </div>
