@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import ra.edu.entity.Customer;
 import ra.edu.entity.Invoice;
 import ra.edu.entity.Product;
@@ -30,8 +31,10 @@ public class DashboardController {
     private CustomerService customerService;
 
     @GetMapping
-    public String showDashboard(Model model, HttpSession session) {
-        List<Customer> customers = customerService.findAllCustomer();
+    public String showDashboard(@RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "5") int size,
+                                Model model, HttpSession session) {
+        List<Customer> customers = customerService.findAllCustomer(page, size);
 
         // Tổng số customer
         model.addAttribute("totalCustomers", customers.size());

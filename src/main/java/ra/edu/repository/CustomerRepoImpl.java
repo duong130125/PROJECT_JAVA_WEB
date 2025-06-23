@@ -17,11 +17,13 @@ public class CustomerRepoImpl implements CustomerRepo {
     private SessionFactory sessionFactory;
 
     @Override
-    public List<Customer> findAllCustomer() {
+    public List<Customer> findAllCustomer(Integer page, Integer size) {
         Session session = sessionFactory.openSession();
         try {
             String hql = "FROM Customer";
             Query<Customer> query = session.createQuery(hql, Customer.class);
+            query.setFirstResult(page * size); // bắt đầu từ index
+            query.setMaxResults(size);         // số lượng bản ghi
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,12 +102,14 @@ public class CustomerRepoImpl implements CustomerRepo {
     }
 
     @Override
-    public List<Customer> findCustomerByName(String name) {
+    public List<Customer> findCustomerByName(String name, Integer page, Integer size) {
         Session session = sessionFactory.openSession();
         try {
             String hql = "FROM Customer WHERE name LIKE :name";
             Query<Customer> query = session.createQuery(hql, Customer.class);
             query.setParameter("name", "%" + name + "%");
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -163,6 +167,28 @@ public class CustomerRepoImpl implements CustomerRepo {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public Long countAllCustomer() {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.createQuery("SELECT COUNT(*) FROM Customer", Long.class).getSingleResult();
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public Long countCustomerByName(String name) {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.createQuery("SELECT COUNT(*) FROM Customer WHERE name LIKE :name", Long.class)
+                    .setParameter("name", "%" + name + "%")
+                    .getSingleResult();
         } finally {
             session.close();
         }

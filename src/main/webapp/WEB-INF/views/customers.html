@@ -169,7 +169,8 @@
         .customers-pagination-container {
             margin-top: 25px;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
+            padding-right: 20px;
         }
 
         .customers-pagination {
@@ -294,9 +295,9 @@
         <div class="customers-top-bar">
             <!-- Nút Add -->
             <button class="customers-btn-add" data-bs-toggle="modal" data-bs-target="#customerModal" id="btnAddCustomer">Add Customer</button>
-            <form th:action="@{/admin/customers/searchCustomer}" method="post" class="customers-search-box">
+            <form th:action="@{/admin/customers}" method="get" class="customers-search-box">
                 <div class="input-group search-rounded">
-                    <input type="text" name="customerName" class="form-control border-0" placeholder="Tìm kiếm theo tên..."
+                    <input type="text" name="keywordName" class="form-control border-0" placeholder="Tìm kiếm theo tên..."
                            th:value="${keywordName}">
                     <button class="btn btn-outline-secondary border-0" type="submit">
                         <i class="fas fa-search"></i>
@@ -447,18 +448,35 @@
         </div>
 
         <!-- Phân trang -->
-        <div class="customers-pagination-container">
+        <div class="customers-pagination-container ">
             <nav>
                 <ul class="customers-pagination pagination">
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                    <li class="page-item"><a class="page-link" href="#">6</a></li>
-                    <li class="page-item"><a class="page-link" href="#">7</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+
+                    <!-- Nút Previous -->
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/customers(page=${currentPage - 1}, size=${size}, keywordName=${keywordName})}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+
+                    <!-- Vòng lặp số trang -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/admin/customers(page=${i}, size=${size}, keywordName=${keywordName})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+
+                    <!-- Nút Next -->
+                    <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/customers(page=${currentPage + 1}, size=${size}, keywordName=${keywordName})}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+
                 </ul>
             </nav>
         </div>

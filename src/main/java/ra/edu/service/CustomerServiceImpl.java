@@ -14,8 +14,8 @@ public class CustomerServiceImpl implements CustomerService{
     private CustomerRepo customerRepo;
 
     @Override
-    public List<Customer> findAllCustomer() {
-        return customerRepo.findAllCustomer();
+    public List<Customer> findAllCustomer(Integer page, Integer size) {
+        return customerRepo.findAllCustomer(page, size);
     }
 
     @Override
@@ -39,8 +39,8 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public List<Customer> findCustomerByName(String name) {
-        return customerRepo.findCustomerByName(name);
+    public List<Customer> findCustomerByName(String name, Integer page, Integer size) {
+        return customerRepo.findCustomerByName(name, page, size);
     }
 
     @Override
@@ -56,5 +56,15 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public boolean updateCustomerStatus(Integer id, boolean status) {
         return customerRepo.updateCustomerStatus(id, status);
+    }
+
+    @Override
+    public Long countAllCustomer() {
+        return customerRepo.countAllCustomer();
+    }
+
+    @Override
+    public Long countCustomerByName(String name) {
+        return customerRepo.countCustomerByName(name);
     }
 }

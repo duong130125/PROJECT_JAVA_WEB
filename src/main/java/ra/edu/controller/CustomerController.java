@@ -23,20 +23,45 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping
-    public String getAllCustomers(Model model, HttpSession session) {
+    public String listCustomers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keywordName,
+            Model model,
+            HttpSession session
+    ) {
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
 
-        List<Customer> customers = customerService.findAllCustomer();
+        List<Customer> customers;
+        long totalElements;
+
+        if (keywordName != null && !keywordName.trim().isEmpty()) {
+            customers = customerService.findCustomerByName(keywordName, page, size);
+            totalElements = customerService.countCustomerByName(keywordName);
+            model.addAttribute("keywordName", keywordName);
+        } else {
+            customers = customerService.findAllCustomer(page, size);
+            totalElements = customerService.countAllCustomer();
+        }
+
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
         model.addAttribute("customers", customers);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("size", size);
         model.addAttribute("customerDTO", new CustomerDTO());
         model.addAttribute("content", "customers");
+
         return "homeAdmin";
     }
 
     @PostMapping("/save")
-    public String saveCustomer(@Valid @ModelAttribute("customerDTO") CustomerDTO customerDTO,
+    public String saveCustomer(@RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "5") int size, @Valid
+                               @ModelAttribute("customerDTO") CustomerDTO customerDTO,
                                BindingResult result,
                                HttpSession session,
                                Model model) {
@@ -63,7 +88,8 @@ public class CustomerController {
         }
 
         if (result.hasErrors()) {
-            model.addAttribute("customers", customerService.findAllCustomer());
+            model.addAttribute("customers", customerService.findAllCustomer(page, size));
+            prepareCustomerList(model, page, size);
             model.addAttribute("content", "customers");
             model.addAttribute("showModal", true);
             if (customerDTO.getId() != null) {
@@ -82,37 +108,37 @@ public class CustomerController {
         return "redirect:/admin/customers";
     }
 
-    // Xóa sản phẩm
-    @PostMapping("/delete/{id}")
-    public String deleteCustomer(@PathVariable int id,
-                                RedirectAttributes redirectAttributes,
-                                HttpSession session) {
-
-        if (session.getAttribute("adminLogin") == null) {
-            return "redirect:/login";
-        }
-
-        try {
-            // Kiểm tra sản phẩm có tồn tại không
-            Customer customer = customerService.findCustomerById(id);
-            if (customer == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy khách hàng cần xóa!");
-                return "redirect:/admin/customers";
-            }
-
-            boolean deleted = customerService.deleteCustomer(id);
-            if (deleted) {
-                redirectAttributes.addFlashAttribute("successMessage", "Xóa khách hàng thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "Xóa khách hàng thất bại!");
-            }
-
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa khách hàng: " + e.getMessage());
-        }
-
-        return "redirect:/admin/customers";
-    }
+//    // Xóa sản phẩm
+//    @PostMapping("/delete/{id}")
+//    public String deleteCustomer(@PathVariable int id,
+//                                RedirectAttributes redirectAttributes,
+//                                HttpSession session) {
+//
+//        if (session.getAttribute("adminLogin") == null) {
+//            return "redirect:/login";
+//        }
+//
+//        try {
+//            // Kiểm tra sản phẩm có tồn tại không
+//            Customer customer = customerService.findCustomerById(id);
+//            if (customer == null) {
+//                redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy khách hàng cần xóa!");
+//                return "redirect:/admin/customers";
+//            }
+//
+//            boolean deleted = customerService.deleteCustomer(id);
+//            if (deleted) {
+//                redirectAttributes.addFlashAttribute("successMessage", "Xóa khách hàng thành công!");
+//            } else {
+//                redirectAttributes.addFlashAttribute("errorMessage", "Xóa khách hàng thất bại!");
+//            }
+//
+//        } catch (Exception e) {
+//            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi xóa khách hàng: " + e.getMessage());
+//        }
+//
+//        return "redirect:/admin/customers";
+//    }
 
     @PostMapping("/update-status")
     public String updateStatus(@RequestParam("id") Integer id,
@@ -121,39 +147,37 @@ public class CustomerController {
         return "redirect:/admin/customers";
     }
 
-    @PostMapping("/searchCustomer")
-    public String searchCustomerByName(@RequestParam(required = false) String customerName,
-                                       Model model,
-                                       HttpSession session) {
-        if (session.getAttribute("adminLogin") == null) {
-            return "redirect:/login";
-        }
+//    @PostMapping("/searchCustomer")
+//    public String searchCustomerByName(@RequestParam(required = false) String customerName,
+//                                       Model model,
+//                                       HttpSession session) {
+//        if (session.getAttribute("adminLogin") == null) {
+//            return "redirect:/login";
+//        }
+//
+//        List<Customer> customers;
+//        if (customerName == null || customerName.trim().isEmpty()) {
+//            customers = customerService.findAllCustomer(); // Nếu ô tìm kiếm rỗng
+//        } else {
+//            customers = customerService.findCustomerByName(customerName.trim());
+//        }
+//
+//        model.addAttribute("customers", customers);
+//        model.addAttribute("customerDTO", new CustomerDTO());
+//        model.addAttribute("content", "customers");
+//        model.addAttribute("keywordName", customerName);
+//
+//        return "homeAdmin";
+//    }
 
-        List<Customer> customers;
-        if (customerName == null || customerName.trim().isEmpty()) {
-            customers = customerService.findAllCustomer(); // Nếu ô tìm kiếm rỗng
-        } else {
-            customers = customerService.findCustomerByName(customerName.trim());
-        }
+    private void prepareCustomerList(Model model, Integer page, Integer size) {
+        List<Customer> customers = customerService.findAllCustomer(page, size);
+        long totalItems = customerService.countAllCustomer();
+        int totalPages = (int) Math.ceil((double) totalItems / size);
 
         model.addAttribute("customers", customers);
-        model.addAttribute("customerDTO", new CustomerDTO());
-        model.addAttribute("content", "customers");
-        model.addAttribute("keywordName", customerName);
-
-        return "homeAdmin";
-    }
-
-    // ======= CHUYỂN ĐỔI =========
-    private CustomerDTO convertToDTO(Customer c) {
-        CustomerDTO dto = new CustomerDTO();
-        dto.setId(c.getId());
-        dto.setName(c.getName());
-        dto.setEmail(c.getEmail());
-        dto.setPhone(c.getPhone());
-        dto.setAddress(c.getAddress());
-        dto.setStatus(c.getStatus());
-        return dto;
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
     }
 
     private Customer convertToEntity(CustomerDTO dto) {
