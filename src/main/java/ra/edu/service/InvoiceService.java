@@ -6,12 +6,14 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface InvoiceService {
-    List<Invoice> findAllInvoice();
     Invoice findInvoiceById(Integer id);
     boolean saveInvoice(Invoice invoice);
     boolean deleteInvoice(Integer id);
     boolean updateInvoice(Invoice invoice);
-    List<Invoice> findInvoiceByCustomerName(String name);
+    List<Invoice> findInvoiceByCustomerName(String name, int page, int size);
+    List<Invoice> findAllInvoice(int page, int size);
+    long countInvoiceByCustomerName(String name);
+    long countAllInvoice();
     BigDecimal getTotalRevenueByDay();
     BigDecimal getTotalRevenueByMonth();
     BigDecimal getTotalRevenueByYear();

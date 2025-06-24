@@ -46,6 +46,7 @@ public class ProductController {
         int totalPages = (int) Math.ceil((double) total / size);
 
         model.addAttribute("products", products);
+        model.addAttribute("isSearch", true);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("size", size);

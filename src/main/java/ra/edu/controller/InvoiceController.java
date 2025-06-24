@@ -25,42 +25,68 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @GetMapping
-    public String getAllInvoices(Model model, HttpSession session) {
+    public String getAllInvoices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            HttpSession session) {
+
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
 
-        List<Invoice> invoices = invoiceService.findAllInvoice();
+        List<Invoice> invoices = invoiceService.findAllInvoice(page, size);
+        long totalElements = invoiceService.countAllInvoice();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+
         model.addAttribute("invoices", invoices);
         model.addAttribute("invoiceDTO", new InvoiceDTO());
         model.addAttribute("content", "invoices");
+        model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
+        model.addAttribute("totalPages", totalPages);
 
         return "homeAdmin";
     }
 
     @GetMapping("/searchNameCustomer")
-    public String getAllInvoices(@RequestParam(required = false) String searchNameCustomer,
-                                 Model model, HttpSession session) {
+    public String getInvoicesByCustomerName(
+            @RequestParam(required = false) String searchNameCustomer,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model,
+            HttpSession session) {
+
         if (session.getAttribute("adminLogin") == null) {
             return "redirect:/login";
         }
 
         try {
             List<Invoice> invoices;
+            long totalElements;
+
             if (searchNameCustomer != null && !searchNameCustomer.trim().isEmpty()) {
-                invoices = invoiceService.findInvoiceByCustomerName(searchNameCustomer.trim());
+                invoices = invoiceService.findInvoiceByCustomerName(searchNameCustomer.trim(), page, size);
+                totalElements = invoiceService.countInvoiceByCustomerName(searchNameCustomer.trim());
+                model.addAttribute("searchKeyword", searchNameCustomer);
             } else {
-                invoices = invoiceService.findAllInvoice();
+                invoices = invoiceService.findAllInvoice(page, size);
+                totalElements = invoiceService.countAllInvoice();
             }
+
+            int totalPages = (int) Math.ceil((double) totalElements / size);
 
             model.addAttribute("invoices", invoices);
             model.addAttribute("invoiceDTO", new InvoiceDTO());
             model.addAttribute("content", "invoices");
-            model.addAttribute("searchKeyword", searchNameCustomer);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("size", size);
+            model.addAttribute("totalPages", totalPages);
+
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("error", "Có lỗi xảy ra khi tải hóa đơn.");
-            model.addAttribute("invoices", new ArrayList<>()); // tránh null
+            model.addAttribute("invoices", new ArrayList<>());
         }
 
         return "homeAdmin";

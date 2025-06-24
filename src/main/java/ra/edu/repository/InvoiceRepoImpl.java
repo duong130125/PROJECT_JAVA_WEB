@@ -18,11 +18,13 @@ public class InvoiceRepoImpl implements InvoiceRepo {
     private SessionFactory sessionFactory;
 
     @Override
-    public List<Invoice> findAllInvoice() {
+    public List<Invoice> findAllInvoice(int page, int size) {
         Session session = sessionFactory.openSession();
         try {
             String hql = "SELECT i FROM Invoice i JOIN FETCH i.customer";
             Query<Invoice> query = session.createQuery(hql, Invoice.class);
+            query.setFirstResult(page * size); // ví dụ page=1 -> bắt đầu từ 5 nếu size=5
+            query.setMaxResults(size);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,12 +103,14 @@ public class InvoiceRepoImpl implements InvoiceRepo {
     }
 
     @Override
-    public List<Invoice> findInvoiceByCustomerName(String name) {
+    public List<Invoice> findInvoiceByCustomerName(String name, int page, int size) {
         Session session = sessionFactory.openSession();
         try {
-            String hql = "FROM Invoice i WHERE i.customer.name LIKE :name";
+            String hql = "SELECT i FROM Invoice i JOIN FETCH i.customer WHERE i.customer.name LIKE :name";
             Query<Invoice> query = session.createQuery(hql, Invoice.class);
             query.setParameter("name", "%" + name + "%");
+            query.setFirstResult(page * size);
+            query.setMaxResults(size);
             return query.getResultList();
         } catch (Exception e) {
             e.printStackTrace();
@@ -151,6 +155,28 @@ public class InvoiceRepoImpl implements InvoiceRepo {
                     "WHERE YEAR(i.created_at) = YEAR(CURRENT_DATE) AND i.status = 'COMPLETED'";
             Double result = session.createQuery(hql, Double.class).uniqueResult();
             return BigDecimal.valueOf(result != null ? result : 0.0);
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public long countAllInvoice() {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.createQuery("SELECT COUNT(i.id) FROM Invoice i", Long.class).getSingleResult();
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public long countInvoiceByCustomerName(String name) {
+        Session session = sessionFactory.openSession();
+        try {
+            return session.createQuery("SELECT COUNT(i.id) FROM Invoice i WHERE i.customer.name LIKE :name", Long.class)
+                    .setParameter("name", "%" + name + "%")
+                    .getSingleResult();
         } finally {
             session.close();
         }

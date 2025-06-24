@@ -15,11 +15,6 @@ public class InvoiceServiceImpl implements InvoiceService {
     private InvoiceRepo invoiceRepo;
 
     @Override
-    public List<Invoice> findAllInvoice() {
-        return invoiceRepo.findAllInvoice();
-    }
-
-    @Override
     public Invoice findInvoiceById(Integer id) {
         return invoiceRepo.findInvoiceById(id);
     }
@@ -40,8 +35,23 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public List<Invoice> findInvoiceByCustomerName(String name) {
-        return invoiceRepo.findInvoiceByCustomerName(name);
+    public List<Invoice> findInvoiceByCustomerName(String name, int page, int size) {
+        return invoiceRepo.findInvoiceByCustomerName(name, page, size);
+    }
+
+    @Override
+    public List<Invoice> findAllInvoice(int page, int size) {
+        return invoiceRepo.findAllInvoice(page, size);
+    }
+
+    @Override
+    public long countInvoiceByCustomerName(String name) {
+        return invoiceRepo.countInvoiceByCustomerName(name);
+    }
+
+    @Override
+    public long countAllInvoice() {
+        return invoiceRepo.countAllInvoice();
     }
 
     @Override

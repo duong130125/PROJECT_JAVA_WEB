@@ -48,7 +48,7 @@ public class DashboardController {
         List<Product> products = productService.getAllProducts(page, size);
         model.addAttribute("totalProducts", products.size());
 
-        List<Invoice> allInvoices = invoiceService.findAllInvoice();
+        List<Invoice> allInvoices = invoiceService.findAllInvoice(page, size);
         model.addAttribute("totalOrders", allInvoices.size());
 
         long pendingOrders = allInvoices.stream()

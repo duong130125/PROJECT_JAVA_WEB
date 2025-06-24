@@ -359,15 +359,27 @@
         <div class="invoices-pagination-container">
             <nav>
                 <ul class="invoices-pagination pagination">
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">4</a></li>
-                    <li class="page-item"><a class="page-link" href="#">5</a></li>
-                    <li class="page-item"><a class="page-link" href="#">6</a></li>
-                    <li class="page-item"><a class="page-link" href="#">7</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/invoices(page=${currentPage - 1}, size=${size}, searchNameCustomer=${searchKeyword})}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/admin/invoices(page=${i}, size=${size}, searchNameCustomer=${searchKeyword})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${currentPage >= totalPages - 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/invoices(page=${currentPage + 1}, size=${size}, searchNameCustomer=${searchKeyword})}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
