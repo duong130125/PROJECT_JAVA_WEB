@@ -3,6 +3,7 @@ package ra.edu.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ra.edu.entity.Invoice;
+import ra.edu.entity.InvoiceDetail;
 import ra.edu.repository.InvoiceRepo;
 
 import java.math.BigDecimal;
@@ -67,5 +68,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public BigDecimal getTotalRevenueByYear() {
         return invoiceRepo.getTotalRevenueByYear();
+    }
+
+    @Override
+    public boolean saveInvoiceDetail(InvoiceDetail detail) {
+       return invoiceRepo.saveInvoiceDetail(detail);
     }
 }

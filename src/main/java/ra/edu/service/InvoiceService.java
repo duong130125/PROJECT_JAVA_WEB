@@ -1,6 +1,7 @@
 package ra.edu.service;
 
 import ra.edu.entity.Invoice;
+import ra.edu.entity.InvoiceDetail;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,4 +18,5 @@ public interface InvoiceService {
     BigDecimal getTotalRevenueByDay();
     BigDecimal getTotalRevenueByMonth();
     BigDecimal getTotalRevenueByYear();
+    boolean saveInvoiceDetail(InvoiceDetail detail);
 }

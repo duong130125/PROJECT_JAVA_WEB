@@ -6,6 +6,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ra.edu.entity.Invoice;
+import ra.edu.entity.InvoiceDetail;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -126,8 +127,8 @@ public class InvoiceRepoImpl implements InvoiceRepo {
         try {
             String hql = "SELECT COALESCE(SUM(i.total_amount), 0) FROM Invoice i " +
                     "WHERE DATE(i.created_at) = CURRENT_DATE AND i.status = 'COMPLETED'";
-            Double result = session.createQuery(hql, Double.class).uniqueResult();
-            return BigDecimal.valueOf(result != null ? result : 0.0);
+            BigDecimal result = session.createQuery(hql, BigDecimal.class).uniqueResult();
+            return result != null ? result : BigDecimal.ZERO;
         } finally {
             session.close();
         }
@@ -140,8 +141,8 @@ public class InvoiceRepoImpl implements InvoiceRepo {
             String hql = "SELECT COALESCE(SUM(i.total_amount), 0) FROM Invoice i " +
                     "WHERE MONTH(i.created_at) = MONTH(CURRENT_DATE) " +
                     "AND YEAR(i.created_at) = YEAR(CURRENT_DATE) AND i.status = 'COMPLETED'";
-            Double result = session.createQuery(hql, Double.class).uniqueResult();
-            return BigDecimal.valueOf(result != null ? result : 0.0);
+            BigDecimal result = session.createQuery(hql, BigDecimal.class).uniqueResult();
+            return result != null ? result : BigDecimal.ZERO;
         } finally {
             session.close();
         }
@@ -153,8 +154,25 @@ public class InvoiceRepoImpl implements InvoiceRepo {
         try {
             String hql = "SELECT COALESCE(SUM(i.total_amount), 0) FROM Invoice i " +
                     "WHERE YEAR(i.created_at) = YEAR(CURRENT_DATE) AND i.status = 'COMPLETED'";
-            Double result = session.createQuery(hql, Double.class).uniqueResult();
-            return BigDecimal.valueOf(result != null ? result : 0.0);
+            BigDecimal result = session.createQuery(hql, BigDecimal.class).uniqueResult();
+            return result != null ? result : BigDecimal.ZERO;
+        } finally {
+            session.close();
+        }
+    }
+
+    @Override
+    public boolean saveInvoiceDetail(InvoiceDetail detail) {
+        Session session = sessionFactory.openSession();
+        try {
+            session.beginTransaction();
+            session.save(detail);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.getTransaction().rollback();
+            return false;
         } finally {
             session.close();
         }

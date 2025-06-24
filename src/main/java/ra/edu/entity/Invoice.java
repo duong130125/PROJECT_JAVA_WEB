@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import ra.edu.utils.InvoiceStatus;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Invoice {
     private Date created_at;
 
     @Column(nullable = false)
-    private Double total_amount;
+    private BigDecimal total_amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

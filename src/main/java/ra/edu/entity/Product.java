@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Product {
     private String brand;
 
     @Column(name = "product_price", nullable = false)
-    private Double price;
+    private BigDecimal price;
 
     @Column(name = "product_stock", nullable = false)
     private Integer stock;

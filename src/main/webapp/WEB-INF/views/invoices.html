@@ -6,8 +6,9 @@
 
         .invoices-header-section {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
             margin-bottom: 30px;
         }
 
@@ -31,8 +32,9 @@
 
         .invoices-header-right {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 15px;
+            width: 100%;
         }
 
         .invoices-btn-orange {
@@ -278,7 +280,7 @@
             </div>
             <div class="invoices-header-right">
                 <button class="invoices-btn-orange" data-bs-toggle="modal" data-bs-target="#invoiceModal">
-                    <i class="fas fa-plus"></i> Add Invoice
+                    Add Invoice
                 </button>
                 <form th:action="@{/admin/invoices/searchNameCustomer}" method="get"
                       class="invoices-search-box search-rounded d-flex align-items-center">

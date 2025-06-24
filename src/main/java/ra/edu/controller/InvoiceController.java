@@ -3,19 +3,29 @@ package ra.edu.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ra.edu.dto.InvoiceDTO;
+import ra.edu.dto.InvoiceDetailDTO;
+import ra.edu.entity.Customer;
 import ra.edu.entity.Invoice;
+import ra.edu.entity.InvoiceDetail;
+import ra.edu.entity.Product;
+import ra.edu.service.CustomerService;
 import ra.edu.service.InvoiceService;
+import ra.edu.service.ProductService;
 import ra.edu.utils.InvoiceStatus;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("admin/invoices")
@@ -23,6 +33,12 @@ public class InvoiceController {
 
     @Autowired
     private InvoiceService invoiceService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private CustomerService customerService;
 
     @GetMapping
     public String getAllInvoices(
@@ -35,18 +51,98 @@ public class InvoiceController {
             return "redirect:/login";
         }
 
+        List<Product> products = productService.getAllProducts(0, 100);
+        List<Customer> customers = customerService.findAllCustomer(0, 100);
         List<Invoice> invoices = invoiceService.findAllInvoice(page, size);
         long totalElements = invoiceService.countAllInvoice();
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
+        // ✅ Tạo danh sách invoiceDetails tương ứng với products
+        InvoiceDTO invoiceDTO = new InvoiceDTO();
+        List<InvoiceDetailDTO> detailDTOs = new ArrayList<>();
+        for (Product p : products) {
+            InvoiceDetailDTO detail = new InvoiceDetailDTO();
+            detail.setProduct_id(p.getId()); // Khởi tạo product_id đúng index
+            detail.setQuantity(0); // Mặc định 0
+            detail.setUnitPrice(p.getPrice());
+            detailDTOs.add(detail);
+        }
+        invoiceDTO.setInvoiceDetails(detailDTOs);
+
+        model.addAttribute("products", products);
+        model.addAttribute("customers", customers);
         model.addAttribute("invoices", invoices);
-        model.addAttribute("invoiceDTO", new InvoiceDTO());
+        model.addAttribute("invoiceDTO", invoiceDTO);
         model.addAttribute("content", "invoices");
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("totalPages", totalPages);
 
         return "homeAdmin";
+    }
+
+
+    @PostMapping("/save")
+    public String addInvoice(@Valid @ModelAttribute("invoiceDTO") InvoiceDTO invoiceDTO,
+                             BindingResult bindingResult,
+                             RedirectAttributes redirectAttributes) {
+
+        // Nếu có lỗi validate, trả về trang chính kèm thông báo lỗi
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("error", "Vui lòng kiểm tra lại thông tin hóa đơn.");
+            redirectAttributes.addFlashAttribute("invoiceDTO", invoiceDTO);
+            return "redirect:/admin/invoices";
+        }
+
+        // Kiểm tra khách hàng tồn tại
+        Customer customer = customerService.findCustomerById(invoiceDTO.getCustomer_id());
+        if (customer == null) {
+            redirectAttributes.addFlashAttribute("error", "Khách hàng không tồn tại.");
+            return "redirect:/admin/invoices";
+        }
+
+        List<InvoiceDetail> detailList = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (InvoiceDetailDTO detailDTO : invoiceDTO.getInvoiceDetails()) {
+            Product product = productService.findProductById(detailDTO.getProduct_id());
+            if (product == null) continue;
+
+            BigDecimal unitPrice = product.getPrice();
+            BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(detailDTO.getQuantity()));
+            total = total.add(lineTotal);
+
+            InvoiceDetail detail = new InvoiceDetail();
+            detail.setProduct(product);
+            detail.setQuantity(detailDTO.getQuantity());
+            detail.setUnitPrice(unitPrice);
+            detailList.add(detail);
+        }
+
+        if (detailList.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Không có sản phẩm hợp lệ để tạo hóa đơn.");
+            return "redirect:/admin/invoices";
+        }
+
+        Invoice invoice = new Invoice();
+        invoice.setCustomer(customer);
+        invoice.setCreated_at(new Date());
+        invoice.setStatus(InvoiceStatus.PENDING);
+        invoice.setTotal_amount(total);
+
+        boolean success = invoiceService.saveInvoice(invoice);
+        if (!success) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi lưu hóa đơn.");
+            return "redirect:/admin/invoices";
+        }
+
+        for (InvoiceDetail detail : detailList) {
+            detail.setInvoice(invoice);
+            invoiceService.saveInvoiceDetail(detail);
+        }
+
+        redirectAttributes.addFlashAttribute("success", "Thêm hóa đơn thành công!");
+        return "redirect:/admin/invoices";
     }
 
     @GetMapping("/searchNameCustomer")

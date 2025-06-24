@@ -1,85 +1,4 @@
 <div th:fragment="invoice-modal">
-    <!-- Modal -->
-    <div class="modal fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="invoiceModalLabel">FORM INVOICE</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="invoiceForm">
-                        <!-- Customer Section -->
-                        <div class="customer-section">
-                            <label for="customer">Customer <span class="text-danger">*</span></label>
-                            <select id="customer" class="customer-select form-control">
-                                <option value="">Select Customer</option>
-                                <option value="customer1" selected>Michael Ballack</option>
-                                <option value="customer2">Customer 1</option>
-                                <option value="customer3">Customer 2</option>
-                            </select>
-                        </div>
-
-                        <!-- Invoice Detail Section -->
-                        <div class="invoice-detail">
-                            <h5 class="detail-title">INVOICE DETAIL</h5>
-
-                            <div class="table-container">
-                                <table id="invoiceTable" class="table">
-                                    <thead>
-                                    <tr>
-                                        <th class="stt">STT</th>
-                                        <th class="product-name">Product Name</th>
-                                        <th class="brand">Brand</th>
-                                        <th class="quantity">Quantity</th>
-                                        <th class="price">Price</th>
-                                        <th class="total">Total Amount</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td class="stt">1</td>
-                                        <td>
-                                            <input type="text" class="form-control form-control-sm" value="Shoe"
-                                                   name="product_name">
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control form-control-sm" value="Balenciaga"
-                                                   name="brand">
-                                        </td>
-                                        <td>
-                                            <div class="quantity-controls">
-                                                <button type="button" class="qty-btn" onclick="decreaseQty(this)">-
-                                                </button>
-                                                <input type="number" value="2" class="qty-input"
-                                                       onchange="updateTotal(this)" min="1">
-                                                <button type="button" class="qty-btn" onclick="increaseQty(this)">+
-                                                </button>
-                                            </div>
-                                        </td>
-                                        <td class="form-control form-control-sm price-input">
-                                            1200 $
-                                        </td>
-                                        <td class="total">2,400 $</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <div class="total-summary">
-                                <h5>Total Amount: <span class="total-amount" id="grandTotal">2,400 $</span></h5>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveInvoice()">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <style>
         body {
             background-color: #f8f9fa;
@@ -272,4 +191,146 @@
             background-color: #f8f9fa;
         }
     </style>
+    <!-- Modal -->
+    <div class="modal fade" id="invoiceModal" tabindex="-1" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="invoiceModalLabel">FORM INVOICE</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="invoiceForm" th:action="@{/admin/invoices/save}" th:object="${invoiceDTO}" method="post">
+                        <!-- Chọn khách hàng -->
+                        <div class="customer-section">
+                            <label for="customer">Customer <span class="text-danger">*</span></label>
+                            <select id="customer" th:field="*{customer_id}"
+                                    th:classappend="${#fields.hasErrors('customer_id')} ? 'is-invalid'" class="form-control">
+                                <option value="">Select Customer</option>
+                                <option th:each="cus : ${customers}" th:value="${cus.id}" th:text="${cus.name}"></option>
+                            </select>
+                            <div class="invalid-feedback"
+                                 th:if="${#fields.hasErrors('customer_id')}"
+                                 th:errors="*{customer_id}">Lỗi
+                            </div>
+                        </div>
+
+                        <!-- Chi tiết hóa đơn -->
+                        <div class="invoice-detail">
+                            <h5 class="detail-title">INVOICE DETAIL</h5>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Product</th>
+                                    <th>Brand</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="prod, iterStat : ${products}">
+                                    <td th:text="${iterStat.index + 1}"></td>
+
+                                    <!-- ✅ Hidden product_id -->
+                                    <td>
+                                        <input type="hidden"
+                                               th:field="*{invoiceDetails[__${iterStat.index}__].product_id}"
+                                               th:value="${prod.id}" />
+                                        <span th:text="${prod.name}"></span>
+                                    </td>
+
+                                    <td><span th:text="${prod.brand}"></span></td>
+
+                                    <!-- ✅ Quantity input -->
+                                    <td>
+                                        <div class="quantity-controls">
+                                            <button type="button" class="qty-btn" onclick="decreaseQty(this)">-</button>
+                                            <input type="number" min="0"
+                                                   class="qty-input"
+                                                   th:field="*{invoiceDetails[__${iterStat.index}__].quantity}"
+                                                   onchange="updateTotal(this)" />
+                                            <button type="button" class="qty-btn" onclick="increaseQty(this)">+</button>
+                                        </div>
+                                    </td>
+
+                                    <!-- ✅ Hidden UnitPrice -->
+                                    <td class="price-cell"
+                                        th:data-price="${prod.price}"
+                                        th:text="${#numbers.formatDecimal(prod.price, 0, 'COMMA', 0, 'POINT')} + ' $'">
+                                        <input type="hidden"
+                                               th:field="*{invoiceDetails[__${iterStat.index}__].unitPrice}"
+                                               th:value="${prod.price}" />
+                                    </td>
+
+                                    <td class="total-cell">0 $</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <h5>Total Amount: <span id="grandTotal">0 $</span></h5>
+                        </div>
+                    </form>
+
+                </div>
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitInvoiceForm()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tăng số lượng
+        function increaseQty(button) {
+            const input = button.parentNode.querySelector(".qty-input");
+            input.value = parseInt(input.value || "0") + 1;
+            updateTotal(input);
+        }
+
+        // Giảm số lượng
+        function decreaseQty(button) {
+            const input = button.parentNode.querySelector(".qty-input");
+            const currentValue = parseInt(input.value || "0");
+            if (currentValue > 0) {
+                input.value = currentValue - 1;
+                updateTotal(input);
+            }
+        }
+
+        // Cập nhật tổng cho từng dòng và tổng toàn bộ
+        function updateTotal(input) {
+            const row = input.closest("tr");
+            const qty = parseInt(input.value || "0");
+            const price = parseFloat(row.querySelector(".price-cell").dataset.price || "0");
+            const total = qty * price;
+
+            // Cập nhật tổng tiền dòng
+            row.querySelector(".total-cell").innerText = total.toLocaleString("en-US") + " $";
+
+            // Tính lại tổng tất cả
+            let grandTotal = 0;
+            document.querySelectorAll(".qty-input").forEach((inputEl) => {
+                const q = parseInt(inputEl.value || "0");
+                const r = inputEl.closest("tr");
+                const p = parseFloat(r.querySelector(".price-cell").dataset.price || "0");
+                grandTotal += q * p;
+            });
+
+            // Cập nhật tổng tiền hóa đơn
+            document.getElementById("grandTotal").innerText = grandTotal.toLocaleString("en-US") + " $";
+        }
+
+        // Khi modal được load, tự động tính lại tổng tiền
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".qty-input").forEach(input => updateTotal(input));
+        });
+
+        // Nút Save (gọi submit form)
+        function submitInvoiceForm() {
+            document.getElementById("invoiceForm").submit();
+        }
+    </script>
 </div>

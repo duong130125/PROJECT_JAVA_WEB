@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 
 @Data
 public class ProductDTO {
@@ -17,7 +18,7 @@ public class ProductDTO {
 
     @NotNull(message = "Giá sản phẩm không được để trống")
     @Positive(message = "Giá sản phẩm phải lớn hơn 0")
-    private Double price;
+    private BigDecimal price;
 
     @NotNull(message = "Số lượng tồn kho không được để trống")
     @Min(value = 0, message = "Tồn kho không được nhỏ hơn 0")
